@@ -13,6 +13,11 @@ class MainView(Tk):
         self.canvas = Canvas(self, width=1600, height=900)
         self.canvas.pack()
 
+
+        # Add buttons
+        self.exit_button = Button(self, text='Exit', command=self.exit_command)
+
+        # Menu bar
         mbar = Menu(self)
         self.config(menu=mbar)
 
@@ -29,7 +34,7 @@ class MainView(Tk):
         mbar.add_cascade(label="File", menu=file_menu)
         mbar.add_cascade(label='Help', menu=help_menu)
 
-        # Dropdown menu
+        # Dropdown menu robustness
         self.rob_options = [
             "Backdoor Attacks",
             "Data Poisoning Attacks",
@@ -45,6 +50,7 @@ class MainView(Tk):
         self.rob_clicked.set( "Select" )
         self.robustness_drop = OptionMenu(self , self.rob_clicked , *self.rob_options, command=self.rob_option_changed)
 
+         # Dropdown menu effectiveness
         self.eff_options = [
             "Effecitveness",
         ]
@@ -52,6 +58,7 @@ class MainView(Tk):
         self.eff_clicked.set( "Select" )
         self.eff_drop = OptionMenu(self , self.eff_clicked , *self.eff_options, command=self.eff_option_changed)
 
+         # Dropdown menu privacy
         self.priv_options = [
             "Privacy",
         ]
@@ -59,6 +66,7 @@ class MainView(Tk):
         self.priv_clicked.set( "Select" )
         self.priv_drop = OptionMenu(self , self.priv_clicked , *self.priv_options, command=self.priv_option_changed)
 
+         # Dropdown menu fairness
         self.fair_options = [
             "Fairness",
         ]
@@ -66,8 +74,27 @@ class MainView(Tk):
         self.fair_clicked.set( "Select" )
         self.fair_drop = OptionMenu(self , self.fair_clicked , *self.fair_options, command=self.fair_option_changed)
 
+        # Generate app template
         self.generate_template()
+        
+    def generate_template(self):
+        self.canvas.create_image(-786, 0, image=self.bg_img, anchor=NW)
+        
+        self.canvas.create_text(195, 135, text="Effectiveness", font=('Helvatica', 40), fill='Gray')
+        self.canvas.create_window(80, 160, anchor=NW, window=self.eff_drop)
 
+        self.canvas.create_text(148, 330, text="Privacy ", font=('Helvatica', 40), fill='Gray')
+        self.canvas.create_window(80, 360, anchor=NW, window=self.priv_drop)
+
+        self.canvas.create_text(183, 530, text="Robustness", font=('Helvatica', 40), fill='Gray')
+        self.canvas.create_window(80, 560, anchor=NW, window=self.robustness_drop)
+
+        self.canvas.create_text(152, 730, text="Fairness", font=('Helvatica', 40), fill='Gray')
+        self.canvas.create_window(80, 760, anchor=NW, window=self.fair_drop)
+
+        self.canvas.create_text(800, 450, text="Welcome", font=('Helvatica', 24), fill='Gray', tags = 'del')
+        self.canvas.create_window(1500, 10, anchor=NW, window=self.exit_button)
+    
     def eff_option_changed(self, *args):
         self.eff_option = self.eff_clicked.get()
         if self.eff_option == self.eff_options[0]:
@@ -169,23 +196,6 @@ class MainView(Tk):
     
     def helper():
         pass
-    
-    def generate_template(self):
-        self.canvas.create_image(-786, 0, image=self.bg_img, anchor=NW)
-        
-        self.canvas.create_text(195, 135, text="Effectiveness", font=('Helvatica', 40), fill='Gray')
-        self.canvas.create_window(80, 160, anchor=NW, window=self.eff_drop)
-
-        self.canvas.create_text(148, 330, text="Privacy ", font=('Helvatica', 40), fill='Gray')
-        self.canvas.create_window(80, 360, anchor=NW, window=self.priv_drop)
-
-        self.canvas.create_text(183, 530, text="Robustness", font=('Helvatica', 40), fill='Gray')
-        self.canvas.create_window(80, 560, anchor=NW, window=self.robustness_drop)
-
-        self.canvas.create_text(152, 730, text="Fairness", font=('Helvatica', 40), fill='Gray')
-        self.canvas.create_window(80, 760, anchor=NW, window=self.fair_drop)
-
-        self.canvas.create_text(800, 450, text="Welcome", font=('Helvatica', 24), fill='Gray', tags = 'del')
         
     def clean(self):
         self.canvas.delete("del")
