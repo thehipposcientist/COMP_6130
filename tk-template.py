@@ -57,4 +57,27 @@ help_menu.add_command(label='Launch helper', command=helper)
 my_menu.add_cascade(label="File", menu=file_menu)
 my_menu.add_cascade(label='Help', menu=help_menu)
 
+# Dropdown menu
+# Dropdown menu options
+options = [
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+    "Sunday"
+]
+  
+# datatype of menu text
+clicked = StringVar()
+  
+# initial menu text
+clicked.set( "Monday" )
+  
+# Create Dropdown menu
+drop = OptionMenu( root , clicked , *options )
+drop_window = canvas.create_window(10, 10, anchor=NW, window=drop)
+
+
 root.mainloop()
