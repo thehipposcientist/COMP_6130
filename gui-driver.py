@@ -10,10 +10,12 @@ class MainView(Tk):
         # Background Image
         self.bg_img = PhotoImage(file="data/gui/images/background.png")
 
+        # Background Image
+        self.bg_img = PhotoImage(file="data/gui/images/background.png")
+        
          # Create workspace
         self.canvas = Canvas(self, width=1600, height=900)
         self.canvas.pack()
-
 
         # Add buttons
         self.exit_button = Button(self, text='Exit', command=self.exit_command)
@@ -53,7 +55,7 @@ class MainView(Tk):
 
          # Dropdown menu effectiveness
         self.eff_options = [
-            "FedGen",
+            "Effectiveness",
         ]
         self.eff_clicked = StringVar(self)
         self.eff_clicked.set( "Select" )
@@ -77,15 +79,17 @@ class MainView(Tk):
 
         # Generate app template
         self.generate_template()
-
+        
     def generate_template(self):
         self.canvas.create_image(-786, 0, image=self.bg_img, anchor=NW)
-
+        
         self.canvas.create_text(195, 135, text="Effectiveness", font=('Helvatica', 40), fill='Gray')
         self.canvas.create_window(80, 160, anchor=NW, window=self.eff_drop)
 
         self.canvas.create_text(148, 330, text="Privacy ", font=('Helvatica', 40), fill='Gray')
         self.canvas.create_window(80, 360, anchor=NW, window=self.priv_drop)
+
+        #robust_btn = PhotoImage(file="robustness.png")
 
         self.canvas.create_text(183, 530, text="Robustness", font=('Helvatica', 40), fill='Gray')
         self.canvas.create_window(80, 560, anchor=NW, window=self.robustness_drop)
@@ -388,7 +392,7 @@ class MainView(Tk):
 
     def clean(self):
         self.canvas.delete("del")
-
+    
     def reset(self):
         self.clean()
         self.generate_template()
