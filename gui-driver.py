@@ -189,7 +189,7 @@ class MainView(Tk):
     
     def f_page_1(self):
         self.clean()
-        self.canvas.create_text(800, 450, text="Fairness", font=('Helvatica', 24), fill='Gray', tags='del')
+        self.canvas.create_text(800, 450, text="Federated Learning Fairness Algorithm Assessment", font=('Helvatica', 24), fill='Gray', tags='del')
         pass
 
     def exit_command(self):
