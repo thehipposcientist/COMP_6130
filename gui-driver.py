@@ -1,5 +1,8 @@
 from tkinter import *
+from tkinter.ttk import Progressbar
 import os
+import subprocess
+import threading
 
 class MainView(Tk):
     def __init__(self):
@@ -13,7 +16,6 @@ class MainView(Tk):
          # Create workspace
         self.canvas = Canvas(self, width=1600, height=900)
         self.canvas.pack()
-
 
         # Add buttons
         self.exit_button = Button(self, text='Exit', command=self.exit_command)
@@ -138,53 +140,83 @@ class MainView(Tk):
             text='Data-Free Knowledge Distillation for Heterogeneous Federated Learning',
             font=('Helvatica', 24), fill='Gray', tags='del')
 
+        self.pb = Progressbar(self.canvas, orient=HORIZONTAL, length=100, mode='indeterminate')
+        self.canvas.create_window(700,700,window=self.pb.place(x=700,y=700))
+
+        def thread_init():
+            self.start_thread = threading.Thread(target=start_progress)
+            self.start_thread.start()
+
+        def start_progress():
+            self.pb.start()
+            self.next_thread = threading.Thread(target=callback)
+            self.next_thread.start()
+            self.next_thread.join()
+            self.pb.stop()
+            self.pb.config(value=0,maximum=100)
+
         def callback():
             # create dataset
+            #pb = Progressbar(sefl.canvas, orient=HORIZONTAL, length=100, mode='determinant')
+            #self.create_window(700,700,window=pb.place(x=700,y=700))
             home = os.getcwd()
             os.chdir("FedGen/data/{}".format(self.dataset_clicked.get()))
-            print(os.getcwd())
-            os.popen("python generate_niid_dirichlet.py \
-                --n_class {} \
-                --sampling_ratio {} \
-                --alpha {} \
-                --n_user 20".format(
-                    self.classes_field.get(),
-                    self.sampling_field.get(),
-                    self.alpha_field.get()
-                )).read()
+
+            p = [
+                "python",
+                "generate_niid_dirichlet.py",
+                "--n_class",
+                self.classes_field.get(),
+                "--sampling_ratio",
+                self.sampling_field.get(),
+                "--alpha",
+                self.alpha_field.get(),
+                "--n_user",
+                "20"]
+
+            build_data = subprocess.call(p)
+
             os.chdir(home)
             os.chdir("FedGen")
+
             # run algorithm with args
-            process = os.popen("python main.py --dataset {}-alpha{}-ratio{} \
-                --algorithm {} \
-                --batch_size {} \
-                --num_glob_iters {} \
-                --local_epochs {} \
-                --num_users {} \
-                --lamda 1 \
-                --learning_rate {} \
-                --model {} \
-                --personal_learning_rate {} \
-                --times {}".format(
+            p2 = [
+                "python",
+                "main.py",
+                "--dataset",
+                "{}-alpha{}-ratio{}".format(
                     self.dataset_clicked.get(),
                     self.alpha_field.get(),
-                    self.sampling_field.get(),
-                    self.alg_clicked.get(),
-                    self.batch_field.get(),
-                    self.global_itr_field.get(),
-                    self.epoch_field.get(),
-                    self.users_field.get(),
-                    self.learning_rate_field.get(),
-                    self.model_clicked.get(),
-                    self.per_learning_rate_field.get(),
-                    self.training_clicked.get()
-                ))
+                    self.sampling_field.get()),
+                "--algorithm",
+                self.alg_clicked.get(),
+                "--batch_size",
+                self.batch_field.get(),
+                "--num_glob_iters",
+                self.global_itr_field.get(),
+                "--local_epochs",
+                self.epoch_field.get(),
+                "--num_users",
+                self.users_field.get(),
+                "--lamda",
+                "1",
+                "--learning_rate",
+                self.learning_rate_field.get(),
+                "--model",
+                self.model_clicked.get(),
+                "--personal_learning_rate",
+                self.per_learning_rate_field.get(),
+                "--times",
+                self.training_clicked.get()]
 
-            print(process.readlines())
+            run_exp = subprocess.Popen(p2)
+
+            while run_exp.poll() is None:
+                pass
 
         """
             Args for algorithm: (need to remove some of these)
-                x clients - 1,2,3
+                x clients - 1,2,3 (remove)
                 x dataset - mnist or emnist
                 x alpha - float 0.1
                 x sampling ratio - float 0.5
@@ -200,41 +232,43 @@ class MainView(Tk):
                 x training iterations - 3
         """
         # options
-        self.client_options = ['1','2','3']
         self.dataset_options = ['Mnist','EMnist']
         self.alg_options = ['FedGen', 'FedAvg', 'FedProx', 'FedDistll-FL']
         self.model_options = ['cnn', 'mfl']
         self.training_options = ['1', '2', '3']
 
         # variables
-        self.client_clicked = StringVar(self.canvas)
-        self.dataset_clicked = StringVar(self.canvas)
-        self.learning_rate = StringVar(self.canvas)
-        self.alg_clicked = StringVar(self.canvas)
-        self.model_clicked = StringVar(self.canvas)
-        self.training_clicked = StringVar(self.canvas)
+        self.dataset_clicked = StringVar(self.canvas, value='Mnist')
+        self.learning_rate = StringVar(self.canvas, value='0.01')
+        self.alg_clicked = StringVar(self.canvas, value='FedGen')
+        self.model_clicked = StringVar(self.canvas, value='cnn')
+        self.training_clicked = StringVar(self.canvas, value='1')
 
         # global iterations field
         self.global_itr_field = Entry(self.canvas)
+        self.global_itr_field.insert(END, '5')
         self.global_itr_label = Label(self.canvas, text='Global Iterations', bg="#E2E3DB")
-        self.canvas.create_window(800, 500, window=self.global_itr_label.place(x=800,y=500))
-        self.canvas.create_window(900, 500, window=self.global_itr_field.place(x=950,y=500))
+        self.canvas.create_window(800, 500, window=self.global_itr_label.place(x=800,y=200))
+        self.canvas.create_window(900, 500, window=self.global_itr_field.place(x=950,y=200))
 
         # personal learning rate field
         self.per_learning_rate_field = Entry(self.canvas)
+        self.per_learning_rate_field.insert(END, '0.01')
         self.per_learning_rate_label = Label(self.canvas, text='Personal Learning Rate', bg="#E2E3DB")
         self.canvas.create_window(500, 400, window=self.per_learning_rate_label.place(x=450,y=500))
         self.canvas.create_window(600, 400, window=self.per_learning_rate_field.place(x=600,y=500))
 
         # users size field
         self.users_field = Entry(self.canvas)
+        self.users_field.insert(END, '10')
         self.users_label = Label(self.canvas, text='Users', bg="#E2E3DB")
         self.canvas.create_window(800, 400, window=self.users_label.place(x=800,y=450))
         self.canvas.create_window(900, 400, window=self.users_field.place(x=950,y=450))
 
         # epochs field
         self.epoch_field = Entry(self.canvas)
-        self.epoch_label = Label(self.canvas, text='Epoches', bg="#E2E3DB")
+        self.epoch_field.insert(END, '20')
+        self.epoch_label = Label(self.canvas, text='Epochs', bg="#E2E3DB")
         self.canvas.create_window(500, 450, window=self.epoch_label.place(x=450,y=450))
         self.canvas.create_window(600, 450, window=self.epoch_field.place(x=600,y=450))
 
@@ -247,24 +281,28 @@ class MainView(Tk):
 
         # batch size field
         self.batch_field = Entry(self.canvas)
+        self.batch_field.insert(END, '32')
         self.batch_label = Label(self.canvas, text='Number of Batches', bg="#E2E3DB")
         self.canvas.create_window(500, 400, window=self.batch_label.place(x=450,y=400))
         self.canvas.create_window(600, 400, window=self.batch_field.place(x=600,y=400))
 
         # classes field
         self.classes_field = Entry(self.canvas)
+        self.classes_field.insert(END, '10')
         self.classes_label = Label(self.canvas, text='Classes', bg="#E2E3DB")
         self.canvas.create_window(800, 350, window=self.classes_label.place(x=800,y=350))
         self.canvas.create_window(900, 350, window=self.classes_field.place(x=950,y=350))
 
         # sampling ratio field
         self.sampling_field = Entry(self.canvas)
+        self.sampling_field.insert(END, '0.5')
         self.sampling_label = Label(self.canvas, text='Sampling Ratio', bg="#E2E3DB")
         self.canvas.create_window(500, 350, window=self.sampling_label.place(x=450,y=350))
         self.canvas.create_window(600, 350, window=self.sampling_field.place(x=600,y=350))
 
         # alpha field
         self.alpha_field = Entry(self.canvas)
+        self.alpha_field.insert(END, '0.1')
         self.alpha_label = Label(self.canvas, text='Alpha', bg="#E2E3DB")
         self.canvas.create_window(800, 300, window=self.alpha_label.place(x=800,y=300))
         self.canvas.create_window(900, 300, window=self.alpha_field.place(x=950,y=300))
@@ -276,19 +314,12 @@ class MainView(Tk):
         self.canvas.create_window(500, 300, window=self.model_label.place(x=450,y=300))
         self.canvas.create_window(600, 300, window=self.model_drop.place(x=600,y=300))
 
-        # client dropdown
-        self.client_drop = OptionMenu(self.canvas, self.client_clicked, *self.client_options)
-        self.client_drop.config(bg = "#E2E3DB")
-        self.client_label = Label(self.canvas, text='Number of Clients', bg="#E2E3DB")
-        self.canvas.create_window(500, 200, window=self.client_label.place(x=450,y=200))
-        self.canvas.create_window(600, 200, window=self.client_drop.place(x=600,y=200))
-
         # dataset dropdown
         self.dataset_drop = OptionMenu(self.canvas, self.dataset_clicked, *self.dataset_options)
         self.dataset_drop.config(bg = "#E2E3DB")
         self.dataset_label = Label(self.canvas, text='Dataset', bg="#E2E3DB")
-        self.canvas.create_window(800, 200, window=self.dataset_label.place(x=800,y=200))
-        self.canvas.create_window(900, 200, window=self.dataset_drop.place(x=950,y=200))
+        self.canvas.create_window(800, 200, window=self.dataset_label.place(x=450,y=200))
+        self.canvas.create_window(900, 200, window=self.dataset_drop.place(x=600,y=200))
 
         # algorithm dropdown
         self.alg_drop = OptionMenu(self.canvas, self.alg_clicked, *self.alg_options)
@@ -299,12 +330,13 @@ class MainView(Tk):
 
         # learning rate field
         self.learning_rate_field = Entry(self.canvas)
+        self.learning_rate_field.insert(END, '0.01')
         self.learning_rate_label = Label(self.canvas, text='Learning Rate', bg="#E2E3DB")
         self.canvas.create_window(800, 300, window=self.learning_rate_label.place(x=800,y=250))
         self.canvas.create_window(900, 300, window=self.learning_rate_field.place(x=950,y=250))
 
         # submit button
-        self.submit_btn = Button(self.canvas, text="Submit", width=10, command=callback)
+        self.submit_btn = Button(self.canvas, text="Submit", width=10, command=thread_init)
         self.canvas.create_window(800, 600, window=self.submit_btn.place(x=700,y=600))
 
         #canvas_entry_widgets = [
@@ -312,7 +344,6 @@ class MainView(Tk):
         #    self.learning_rate_field, self.learning_rate_label,
         #    self.alg_drop, self.alg_label,
         #    self.dataset_drop, self.dataset_label,
-        #    self.client_drop, self.client_label,
         #    self.model_drop, self.model_label,
         #    self.alpha_field, self.alpha_label,
         #    self.sampling_field, self.sampling_label,
