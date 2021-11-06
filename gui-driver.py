@@ -13,8 +13,8 @@ class MainView(Tk):
         # Background Image
         self.bg_img = PhotoImage(file="data/gui/images/background.png")
 
-        # Background Image
-        self.bg_img = PhotoImage(file="data/gui/images/background.png")
+        # Button Image
+        self.robust_btn = PhotoImage(file="data/gui/images/robustness.png")
         
          # Create workspace
         self.canvas = Canvas(self, width=1600, height=900)
@@ -91,8 +91,6 @@ class MainView(Tk):
 
         self.canvas.create_text(148, 330, text="Privacy ", font=('Helvatica', 40), fill='Gray')
         self.canvas.create_window(80, 360, anchor=NW, window=self.priv_drop)
-
-        #robust_btn = PhotoImage(file="robustness.png")
 
         self.canvas.create_text(183, 530, text="Robustness", font=('Helvatica', 40), fill='Gray')
         self.canvas.create_window(80, 560, anchor=NW, window=self.robustness_drop)
