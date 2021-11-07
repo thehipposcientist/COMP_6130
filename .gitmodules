@@ -1,3 +1,7 @@
 [submodule "FedGen"]
 	path = FedGen
 	url = https://github.com/zhuangdizhu/FedGen.git
+
+[submodule "BackdoorAttack"]
+	path = BackdoorAttack
+	url = https://github.com/ebagdasa/backdoor_federated_learning.git
