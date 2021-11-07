@@ -1,0 +1,6 @@
+Effectiveness
+    serverbase.py Line 228 -- change y to y.detach()
+
+Robustness
+    mkdir saved_models
+    For macOS -- Go thru errors and remove cuda datatypes

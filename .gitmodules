@@ -2,6 +2,6 @@
 	path = FedGen
 	url = https://github.com/zhuangdizhu/FedGen.git
 
-[submodule "BackdoorAttack"]
-	path = BackdoorAttack
-	url = https://github.com/ebagdasa/backdoor_federated_learning.git
+[submodule "PoisoningAttack"]
+	path = PoisoningAttack
+	url = https://github.com/git-disl/DataPoisoning_FL.git
