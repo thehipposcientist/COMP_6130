@@ -1,6 +1,0 @@
-[submodule "FedGen"]
-	path = FedGen
-	url = https://github.com/zhuangdizhu/FedGen.git
-[submodule "DataPoisoning"]
-	path = DataPoisoning
-	url = https://github.com/git-disl/DataPoisoning_FL.git
