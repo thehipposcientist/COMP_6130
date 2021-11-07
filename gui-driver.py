@@ -58,7 +58,7 @@ class MainView(Tk):
 
          # Dropdown menu effectiveness
         self.eff_options = [
-            "Effectiveness",
+            "Data-Free Knowledge Distillation",
         ]
         self.eff_clicked = StringVar(self)
         self.eff_clicked.set( "Select" )
@@ -163,7 +163,7 @@ class MainView(Tk):
             #pb = Progressbar(sefl.canvas, orient=HORIZONTAL, length=100, mode='determinant')
             #self.create_window(700,700,window=pb.place(x=700,y=700))
             home = os.getcwd()
-            os.chdir("FedGen/data/{}".format(self.dataset_clicked.get()))
+            os.chdir("Algs/FedGen/data/{}".format(self.dataset_clicked.get()))
 
             p = [
                 "python",
@@ -180,7 +180,7 @@ class MainView(Tk):
             build_data = subprocess.call(p)
 
             os.chdir(home)
-            os.chdir("FedGen")
+            os.chdir("Algs/FedGen")
 
             # run algorithm with args
             p2 = [
