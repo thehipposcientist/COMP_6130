@@ -3,12 +3,16 @@ from tkinter.ttk import Progressbar
 import os
 import subprocess
 import threading
+import time
 
 class MainView(Tk):
     def __init__(self):
         super().__init__()
         self.title("Insane Project")
         self.geometry("1600x900")
+
+        # Root dir
+        self.root_dir = os.getcwd()
 
         # Background Image
         self.bg_img = PhotoImage(file="data/gui/images/background.png")
@@ -370,9 +374,59 @@ class MainView(Tk):
         pass
 
     def r_page_2(self):
+        def download_datasets():
+            os.chdir("Algs/DataPoisoning/")
+            p = ["python", "generate_data_distribution.py"]
+            subprocess.call(p)
+            p = ["python", "generate_default_models.py"]
+            subprocess.call(p)
+        
+        def donwload_btn_actions():
+            self.download_btn['text'] = 'Downloading'
+            self.canvas.delete('loading_data')
+        
+        def download_btn_threads():
+            self.download_btn['text'] = 'Downloading'
+            download_process = threading.Thread(target=download_datasets)
+            download_btn_act = threading.Thread(target=donwload_btn_actions)
+            self.pb.start()
+            download_btn_act.start()
+            download_process.start()
+            download_process.join()
+            download_btn_act.join()
+            self.pb.stop()
+            self.canvas.delete('download')
+            self.canvas.create_text(800, 300, text='Done downloading', font=('Helvatica', 20), fill='Gray', tags='next')
+            self.next_btn = Button(self, text='Next', command=next)
+            self.canvas.create_window(800, 600, window=self.next_btn, tags = 'next')
+        
+        def download_btn_pressed():
+            self.pb = Progressbar(self.canvas, orient=HORIZONTAL, length=200, mode='indeterminate')
+            self.canvas.create_window(800,550, window=self.pb, tags='download')
+            self.main_thread = threading.Thread(target=download_btn_threads)
+            self.main_thread.start()
+        
+        def next():
+            self.canvas.delete('next')
+            self.canvas.create_text(800, 300, text='Page 2', font=('Helvatica', 20), fill='Gray', tags='next')
+
         self.clean()
-        self.canvas.create_text(800, 450, text="Data Poisoning Attacks", font=('Helvatica', 24), fill='Gray', tags='del')
-        pass
+        self.canvas.create_text(800, 100,
+            text='Data Poisoning Attacks Against Federated Learning',
+            font=('Helvatica', 24), fill='Gray', tags='del')
+        
+        self.canvas.create_text(800, 300,
+            text='Download datasets',
+            font=('Helvatica', 20), fill='Gray', tags='loading_data')
+  
+        self.download_btn = Button(self, text='Download', command=download_btn_pressed)
+        self.canvas.create_window(800, 600, window=self.download_btn, tags='download')
+
+        # self.canvas.create_text(800, 300,
+        #     text='Done',
+        #     font=('Helvatica', 20), fill='Gray', tags='dd')
+        
+        # self.canvas.delete('d')
 
     def r_page_3(self):
         self.clean()
@@ -420,7 +474,9 @@ class MainView(Tk):
     def helper():
         pass
 
-    def clean(self):
+    def clean(self, dir_reset=True):
+        if dir_reset:
+            os.chdir(self.root_dir)
         self.canvas.delete("del")
     
     def reset(self):
