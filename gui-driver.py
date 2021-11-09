@@ -4,6 +4,7 @@ import os
 import subprocess
 import threading
 import time
+from PIL import ImageTk, Image
 
 class MainView(Tk):
     def __init__(self):
@@ -374,19 +375,25 @@ class MainView(Tk):
         pass
 
     def r_page_2(self):
+        self.clean()
+        self.canvas.create_text(800, 100,
+            text='Data Poisoning Attacks Against Federated Learning',
+            font=('Helvatica', 24), fill='Gray', tags='del')
+
         def download_datasets():
             os.chdir("Algs/DataPoisoning/")
             p = ["python", "generate_data_distribution.py"]
             subprocess.call(p)
             p = ["python", "generate_default_models.py"]
             subprocess.call(p)
+            # time.sleep(2)
         
         def donwload_btn_actions():
-            self.download_btn['text'] = 'Downloading'
             self.canvas.delete('loading_data')
+            self.canvas.delete('download_btn')
+            self.canvas.create_text(800, 300, text='Downloading...', font=('Helvatica', 20), fill='Gray', tags='download')
         
         def download_btn_threads():
-            self.download_btn['text'] = 'Downloading'
             download_process = threading.Thread(target=download_datasets)
             download_btn_act = threading.Thread(target=donwload_btn_actions)
             self.pb.start()
@@ -396,37 +403,42 @@ class MainView(Tk):
             download_btn_act.join()
             self.pb.stop()
             self.canvas.delete('download')
-            self.canvas.create_text(800, 300, text='Done downloading', font=('Helvatica', 20), fill='Gray', tags='next')
-            self.next_btn = Button(self, text='Next', command=next)
-            self.canvas.create_window(800, 600, window=self.next_btn, tags = 'next')
+            self.canvas.create_text(800, 300, 
+                text='Finished downloading', 
+                font=('Helvatica', 20), fill='Gray', tags='page-1')
+            self.next_btn = Button(self, text='Next', command=page_2)
+            self.canvas.create_window(800, 650, window=self.next_btn, tags = 'page-1')
         
         def download_btn_pressed():
             self.pb = Progressbar(self.canvas, orient=HORIZONTAL, length=200, mode='indeterminate')
-            self.canvas.create_window(800,550, window=self.pb, tags='download')
+            self.canvas.create_window(800,625, window=self.pb, tags='download')
             self.main_thread = threading.Thread(target=download_btn_threads)
             self.main_thread.start()
-        
-        def next():
-            self.canvas.delete('next')
-            self.canvas.create_text(800, 300, text='Page 2', font=('Helvatica', 20), fill='Gray', tags='next')
 
-        self.clean()
-        self.canvas.create_text(800, 100,
-            text='Data Poisoning Attacks Against Federated Learning',
-            font=('Helvatica', 24), fill='Gray', tags='del')
-        
-        self.canvas.create_text(800, 300,
-            text='Download datasets',
-            font=('Helvatica', 20), fill='Gray', tags='loading_data')
-  
-        self.download_btn = Button(self, text='Download', command=download_btn_pressed)
-        self.canvas.create_window(800, 600, window=self.download_btn, tags='download')
+        def page_1():
+            self.canvas.create_text(800, 300, text='Download Datasets', font=('Helvatica', 20), fill='Gray', tags='loading_data')
 
-        # self.canvas.create_text(800, 300,
-        #     text='Done',
-        #     font=('Helvatica', 20), fill='Gray', tags='dd')
+            self.cifar_img = (Image.open("data/gui/images/CIFAR-10.png"))
+            self.mnist_img = (Image.open("data/gui/images/MNIST.png"))
+            self.cifar_img = self.cifar_img.resize((200, 200), Image.ANTIALIAS)
+            self.mnist_img = self.mnist_img.resize((200, 200), Image.ANTIALIAS)
+            self.cifar_img = ImageTk.PhotoImage(self.cifar_img)
+            self.mnist_img = ImageTk.PhotoImage(self.mnist_img)
+            
+            self.canvas.create_image(575, 350, image=self.cifar_img, anchor=NW, tags='page-1')
+            self.canvas.create_text((675, 575), text="CIFAR-10", font=('Helvatica', 20), fill='Gray', tags = 'page-1')
+            
+            self.canvas.create_image(825, 350, image=self.mnist_img, anchor=NW, tags='page-1')
+            self.canvas.create_text((925, 575), text="Fashion MNIST", font=('Helvatica', 20), fill='Gray', tags = 'page-1')
+
+            self.download_btn = Button(self, text='Download', command=download_btn_pressed)
+            self.canvas.create_window(800, 650, window=self.download_btn, tags='download_btn')
         
-        # self.canvas.delete('d')
+        def page_2():
+            self.canvas.delete('page-1')
+            self.canvas.create_text(800, 300, text='Set parameters', font=('Helvatica', 24), fill='Gray', tags='next')
+        
+        page_1()
 
     def r_page_3(self):
         self.clean()
