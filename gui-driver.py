@@ -381,12 +381,12 @@ class MainView(Tk):
             font=('Helvatica', 24), fill='Gray', tags='del')
 
         def download_datasets():
-            os.chdir("Algs/DataPoisoning/")
-            p = ["python", "generate_data_distribution.py"]
-            subprocess.call(p)
-            p = ["python", "generate_default_models.py"]
-            subprocess.call(p)
-            # time.sleep(2)
+            # os.chdir("Algs/DataPoisoning/")
+            # p = ["python", "generate_data_distribution.py"]
+            # subprocess.call(p)
+            # p = ["python", "generate_default_models.py"]
+            # subprocess.call(p)
+            time.sleep(1)
         
         def donwload_btn_actions():
             self.canvas.delete('loading_data')
@@ -433,10 +433,144 @@ class MainView(Tk):
 
             self.download_btn = Button(self, text='Download', command=download_btn_pressed)
             self.canvas.create_window(800, 650, window=self.download_btn, tags='download_btn')
+
+        def run():
+            print("This is run process")
+            time.sleep(1)
+
+        def run_btn_actions():
+            self.canvas.delete('run_btn')
+            self.canvas.create_text(800, 650, text='Running', font=('Helvatica', 18), fill='Gray', tags='page-2')
+
+        def run_btn_threads():
+            run_process = threading.Thread(target=run)
+            run_btn_act = threading.Thread(target=run_btn_actions)
+            self.pb.start()
+            run_process.start()
+            run_btn_act.start()
+            run_btn_act.join()
+            run_process.join()
+            self.pb.stop()
+
+        def run_btn_pressed():
+            self.pb = Progressbar(self.canvas, orient=HORIZONTAL, length=200, mode='indeterminate')
+            self.canvas.create_window(800,625, window=self.pb, tags='run')
+            self.main_thread = threading.Thread(target=run_btn_threads)
+            self.main_thread.start()
         
         def page_2():
             self.canvas.delete('page-1')
-            self.canvas.create_text(800, 300, text='Set parameters', font=('Helvatica', 24), fill='Gray', tags='next')
+            self.canvas.create_text(800, 150, text='Set parameters', font=('Helvatica', 20), fill='Gray', tags='page-2')
+
+            # options
+            self.dataset_options = ['CIFAR-10','Fashion-MNIST']
+            self.alg_options = ['Label Flipping Attack', 
+                                'Attack Timing', 
+                                'Malicious Participant Availibility', 
+                                'Defense']
+            self.model_options = ['cnn', 'mfl']
+            self.training_options = ['1', '2', '3']
+
+            # variables
+            self.dataset_clicked = StringVar(self.canvas, value='CIFAR-10')
+            self.learning_rate = StringVar(self.canvas, value='0.01')
+            self.alg_clicked = StringVar(self.canvas, value='FedGen')
+            self.model_clicked = StringVar(self.canvas, value='cnn')
+            self.training_clicked = StringVar(self.canvas, value='1')
+
+            # global iterations field
+            self.global_itr_field = Entry(self.canvas)
+            self.global_itr_field.insert(END, '5')
+            self.global_itr_label = Label(self.canvas, text='Global Iterations', bg="#E2E3DB")
+            self.canvas.create_window(800, 500, window=self.global_itr_label.place(x=800,y=200))
+            self.canvas.create_window(900, 500, window=self.global_itr_field.place(x=950,y=200))
+
+            # personal learning rate field
+            self.per_learning_rate_field = Entry(self.canvas)
+            self.per_learning_rate_field.insert(END, '0.01')
+            self.per_learning_rate_label = Label(self.canvas, text='Personal Learning Rate', bg="#E2E3DB")
+            self.canvas.create_window(500, 400, window=self.per_learning_rate_label.place(x=450,y=500))
+            self.canvas.create_window(600, 400, window=self.per_learning_rate_field.place(x=600,y=500))
+
+            # users size field
+            self.users_field = Entry(self.canvas)
+            self.users_field.insert(END, '10')
+            self.users_label = Label(self.canvas, text='Users', bg="#E2E3DB")
+            self.canvas.create_window(800, 400, window=self.users_label.place(x=800,y=450))
+            self.canvas.create_window(900, 400, window=self.users_field.place(x=950,y=450))
+
+            # epochs field
+            self.epoch_field = Entry(self.canvas)
+            self.epoch_field.insert(END, '20')
+            self.epoch_label = Label(self.canvas, text='Epochs', bg="#E2E3DB")
+            self.canvas.create_window(500, 450, window=self.epoch_label.place(x=450,y=450))
+            self.canvas.create_window(600, 450, window=self.epoch_field.place(x=600,y=450))
+
+            # iterations dropdown
+            self.training_drop = OptionMenu(self.canvas, self.training_clicked, *self.training_options)
+            self.training_drop.config(bg = "#E2E3DB")
+            self.training_label = Label(self.canvas, text='Training Rounds', bg="#E2E3DB")
+            self.canvas.create_window(800, 400, window=self.training_label.place(x=800,y=400))
+            self.canvas.create_window(900, 400, window=self.training_drop.place(x=950,y=400))
+
+            # batch size field
+            self.batch_field = Entry(self.canvas)
+            self.batch_field.insert(END, '32')
+            self.batch_label = Label(self.canvas, text='Number of Batches', bg="#E2E3DB")
+            self.canvas.create_window(500, 400, window=self.batch_label.place(x=450,y=400))
+            self.canvas.create_window(600, 400, window=self.batch_field.place(x=600,y=400))
+
+            # classes field
+            self.classes_field = Entry(self.canvas)
+            self.classes_field.insert(END, '10')
+            self.classes_label = Label(self.canvas, text='Classes', bg="#E2E3DB")
+            self.canvas.create_window(800, 350, window=self.classes_label.place(x=800,y=350))
+            self.canvas.create_window(900, 350, window=self.classes_field.place(x=950,y=350))
+
+            # sampling ratio field
+            self.sampling_field = Entry(self.canvas)
+            self.sampling_field.insert(END, '0.5')
+            self.sampling_label = Label(self.canvas, text='Sampling Ratio', bg="#E2E3DB")
+            self.canvas.create_window(500, 350, window=self.sampling_label.place(x=450,y=350))
+            self.canvas.create_window(600, 350, window=self.sampling_field.place(x=600,y=350))
+
+            # alpha field
+            self.alpha_field = Entry(self.canvas)
+            self.alpha_field.insert(END, '0.1')
+            self.alpha_label = Label(self.canvas, text='Alpha', bg="#E2E3DB")
+            self.canvas.create_window(800, 300, window=self.alpha_label.place(x=800,y=300))
+            self.canvas.create_window(900, 300, window=self.alpha_field.place(x=950,y=300))
+
+            # model dropdown
+            self.model_drop = OptionMenu(self.canvas, self.model_clicked, *self.model_options)
+            self.model_drop.config(bg = "#E2E3DB")
+            self.model_label = Label(self.canvas, text='Model', bg="#E2E3DB")
+            self.canvas.create_window(500, 300, window=self.model_label.place(x=450,y=300))
+            self.canvas.create_window(600, 300, window=self.model_drop.place(x=600,y=300))
+
+            # dataset dropdown
+            self.dataset_drop = OptionMenu(self.canvas, self.dataset_clicked, *self.dataset_options)
+            self.dataset_drop.config(bg = "#E2E3DB")
+            self.dataset_label = Label(self.canvas, text='Dataset', bg="#E2E3DB")
+            self.canvas.create_window(800, 200, window=self.dataset_label.place(x=450,y=200))
+            self.canvas.create_window(900, 200, window=self.dataset_drop.place(x=600,y=200))
+
+            # algorithm dropdown
+            self.alg_drop = OptionMenu(self.canvas, self.alg_clicked, *self.alg_options)
+            self.alg_drop.config(bg = "#E2E3DB")
+            self.alg_label = Label(self.canvas, text='Algorithm', bg="#E2E3DB")
+            self.canvas.create_window(500, 300, window=self.alg_label.place(x=450,y=250))
+            self.canvas.create_window(600, 300, window=self.alg_drop.place(x=600,y=250))
+
+            # learning rate field
+            self.learning_rate_field = Entry(self.canvas)
+            self.learning_rate_field.insert(END, '0.01')
+            self.learning_rate_label = Label(self.canvas, text='Learning Rate', bg="#E2E3DB")
+            self.canvas.create_window(800, 300, window=self.learning_rate_label.place(x=800,y=250))
+            self.canvas.create_window(900, 300, window=self.learning_rate_field.place(x=950,y=250))
+            
+            self.run_btn = Button(self, text='Run', command=run_btn_pressed)
+            self.canvas.create_window(800, 650, window=self.run_btn, tags='run_btn')
         
         page_1()
 

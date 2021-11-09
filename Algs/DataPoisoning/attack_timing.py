@@ -55,7 +55,6 @@ if __name__ == '__main__':
     args.num_workers = parsed_args.num_workers
     args.num_poisoned_workers = parsed_args.num_poisoned_workers
         
-
     if parsed_args.dataset == 'CIFAR-10':
         args.train_data_loader_pickle_path = "data_loaders/cifar-10/train_data_loader.pickle"
         args.set_test_data_loader_pickle_path = "data_loaders/cifar-10/test_data_loader.pickle"
