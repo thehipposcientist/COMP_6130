@@ -72,13 +72,13 @@ def run_machine_learning(clients, args, poisoned_workers):
 
     return convert_results_to_csv(epoch_test_set_results), worker_selection
 
-def run_exp(replacement_method, num_poisoned_workers, KWARGS, client_selection_strategy, idx):
+def run_exp(replacement_method, num_poisoned_workers, KWARGS, client_selection_strategy, idx, args):
     log_files, results_files, models_folders, worker_selections_files = generate_experiment_ids(idx, 1)
 
     # Initialize logger
     handler = logger.add(log_files[0], enqueue=True)
 
-    args = Arguments(logger)
+    # args = Arguments(logger)
     args.set_model_save_path(models_folders[0])
     args.set_num_poisoned_workers(num_poisoned_workers)
     args.set_round_worker_selection_strategy_kwargs(KWARGS)

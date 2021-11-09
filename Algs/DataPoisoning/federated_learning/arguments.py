@@ -42,8 +42,7 @@ class Arguments:
         self.num_workers = 50
         self.num_poisoned_workers = 0
 
-        #self.net = Cifar10CNN
-        self.net = FashionMNISTCNN
+        self.net = Cifar10CNN
 
         self.train_data_loader_pickle_path = "data_loaders/fashion-mnist/train_data_loader.pickle"
         self.test_data_loader_pickle_path = "data_loaders/fashion-mnist/test_data_loader.pickle"
