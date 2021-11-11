@@ -419,8 +419,15 @@ class MainView(Tk):
             os.chdir(self.root_dir)
             os.chdir("Algs/DataPoisoning")
 
-            method = 'attack_timing.py'
+            method = 'label_flipping_attack.py'
 
+            if self.alg_clicked == 'Label Flipping Attack':
+                method = 'label_flipping_attack.py'
+            elif self.alg_clicked == 'Attack Timing':
+                method = 'attack_timing.py'
+            elif self.alg_clicked == 'Malicious Participant Availibility':
+                method = 'malicious_participant_availability.py'
+            
             # run algorithm with args
             p = [
                 "python",
@@ -504,8 +511,7 @@ class MainView(Tk):
             self.dataset_options = ['Fashion-MNIST', 'CIFAR-10']
             self.alg_options = ['Label Flipping Attack', 
                                 'Attack Timing', 
-                                'Malicious Participant Availibility', 
-                                'Defense']
+                                'Malicious Participant Availibility']
             self.bool_dropdown = ['True', 'False']
 
             # Variables
