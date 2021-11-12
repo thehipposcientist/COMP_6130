@@ -4,6 +4,9 @@ import os
 import subprocess
 import threading
 import time
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
 from PIL import ImageTk, Image
 
 class MainView(Tk):
@@ -387,6 +390,7 @@ class MainView(Tk):
             subprocess.call(p)
             p = ["python", "generate_default_models.py"]
             subprocess.call(p)
+            time.sleep(1)
         
         def donwload_btn_actions():
             self.canvas.delete('loading_data')
@@ -419,19 +423,19 @@ class MainView(Tk):
             os.chdir(self.root_dir)
             os.chdir("Algs/DataPoisoning")
 
-            method = 'label_flipping_attack.py'
+            self.method = 'label_flipping_attack.py'
 
             if self.alg_clicked == 'Label Flipping Attack':
-                method = 'label_flipping_attack.py'
+                self.method = 'label_flipping_attack.py'
             elif self.alg_clicked == 'Attack Timing':
-                method = 'attack_timing.py'
+                self.method = 'attack_timing.py'
             elif self.alg_clicked == 'Malicious Participant Availibility':
-                method = 'malicious_participant_availability.py'
+                self.method = 'malicious_participant_availability.py'
             
             # run algorithm with args
             p = [
                 "python",
-                method,
+                self.method,
                 "--dataset",
                 self.dataset_clicked.get(),
                 "--batch_size",
@@ -460,6 +464,7 @@ class MainView(Tk):
                 self.pworkers_field.get()]
 
             subprocess.call(p)
+            time.sleep(1)
 
         def run_btn_actions():
             self.canvas.delete('run_btn')
@@ -622,9 +627,41 @@ class MainView(Tk):
             self.run_btn = Button(self, text='Run', command=run_btn_pressed)
             self.canvas.create_window(800, 650, window=self.run_btn, tags='run_btn')
         
+        def finish_btn_tasks():
+            p = ["rm", "-rf", "temp.png"]
+            subprocess.call(p)
+            self.exit_command()
+        
+        def s_f_btn_tasks():
+            p = ["mv", "temp.png", "Algs/DataPoisoning/saved_plots/acc_plot_"+self.method[:-3]+".png"]
+            subprocess.call(p)
+            self.exit_command()
+            pass
+
         def page_3():
+            os.chdir(self.root_dir)
             self.canvas.delete('page-2')
-            self.canvas.create_text(800, 650, text='Results', font=('Helvatica', 18), fill='Gray', tags='page-3')
+            self.canvas.create_text(800, 150, text='Results', font=('Helvatica', 18), fill='Gray', tags='page-3')
+            
+            FILEPATH = 'Algs/DataPoisoning/3000_results.csv'
+            df = pd.read_csv(FILEPATH, header=None)
+            acc_plt = plt
+            acc_plt.plot(df[0], color='blue')
+            acc_plt.xlabel('Epochs')
+            acc_plt.ylabel('Accuracy (%)')
+            acc_plt.savefig('temp.png')
+
+            self.acc_plot_fig = (Image.open("temp.png"))
+            self.acc_plot_fig = ImageTk.PhotoImage(self.acc_plot_fig)
+
+            self.canvas.create_image(500, 175, image=self.acc_plot_fig, anchor=NW, tags='page-3')
+            self.canvas.create_text(600, 675, text="Final Accuracy: " + str(df[0][int(self.epochs.get()) - 1]), 
+                                    font=('Helvatica', 18), fill='Gray', tags='page-3')
+        
+            self.finish_btn = Button(self, text='Exit', command=finish_btn_tasks)
+            self.canvas.create_window(1100, 675, window=self.finish_btn, tags = 'page-3')
+            self.s_f_btn = Button(self, text='Save end Exit', command=s_f_btn_tasks)
+            self.canvas.create_window(1000, 675, window=self.s_f_btn, tags='page-3')
 
         page_1()
 
