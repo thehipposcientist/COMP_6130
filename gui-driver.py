@@ -369,8 +369,130 @@ class MainView(Tk):
 
     def p_page_1(self):
         self.clean()
-        self.canvas.create_text(800, 450, text="Privacy", font=('Helvatica', 24), fill='Gray', tags='del')
-        pass
+        self.canvas.create_text(800, 100,
+            text='Inverting Gradients -- How easy is it to break privacy in federated learning?',
+            font=('Helvatica', 24), fill='Gray', tags='del')
+
+        
+        def page_1():
+            self.canvas.create_text(800, 150, text='Set parameters', font=('Helvatica', 20), fill='Gray', tags='page-2')
+
+            # options
+            self.dataset_options = ['CIFAR10']
+            self.model_options = ['ConvNet',
+                                'ConvNet64', 
+                                'ResNet20-4']
+            self.bool_dropdown = ['True', 'False']
+
+            # Variables
+            self.model_clicked = StringVar(self.canvas, value='ConvNet')
+            self.dataset_clicked = StringVar(self.canvas, value='CIFAR10')
+            self.training_clicked = StringVar(self.canvas, value='1')
+            self.cuda_clicked = StringVar(self.canvas, value='True')
+            self.save_clicked = StringVar(self.canvas, value='False')
+
+            # Algorithm dropdown
+            self.model_drop = OptionMenu(self.canvas, self.model_clicked, *self.model_options)
+            self.model_drop.config(bg = "#E2E3DB")
+            self.model_label = Label(self.canvas, text='Model', bg="#E2E3DB")
+            self.canvas.create_window(450, 200, anchor=NW, window=self.model_label, tags='page-1')
+            self.canvas.create_window(600, 200, anchor=NW, window=self.model_drop, tags='page-1')
+
+            # Dataset dropdown
+            self.dataset_drop = OptionMenu(self.canvas, self.dataset_clicked, *self.dataset_options)
+            self.dataset_drop.config(bg = "#E2E3DB")
+            self.dataset_label = Label(self.canvas, text='Dataset', bg="#E2E3DB")
+            self.canvas.create_window(450, 250, anchor=NW, window=self.dataset_label, tags='page-2')
+            self.canvas.create_window(600, 250, anchor=NW, window=self.dataset_drop, tags='page-2')
+
+            # # Batch size field
+            # self.batch_size = Entry(self.canvas)
+            # self.batch_size.insert(END, '10')
+            # self.batch_size_label = Label(self.canvas, text='Batch Size', bg="#E2E3DB")
+            # self.canvas.create_window(450, 300, anchor=NW, window=self.batch_size_label, tags='page-2')
+            # self.canvas.create_window(600, 300, anchor=NW, window=self.batch_size, tags='page-2')
+            
+            # # Test Batch Size field
+            # self.tbatch_field = Entry(self.canvas)
+            # self.tbatch_field.insert(END, '1000')
+            # self.tbatch_label = Label(self.canvas, text='Test Batch Size', bg="#E2E3DB")
+            # self.canvas.create_window(450, 350, anchor=NW, window=self.tbatch_label, tags='page-2')
+            # self.canvas.create_window(600, 350, anchor=NW, window=self.tbatch_field, tags='page-2')
+
+            # # Epochs field
+            # self.epochs = Entry(self.canvas)
+            # self.epochs.insert(END, '10')
+            # self.epochs_label = Label(self.canvas, text='Epochs', bg="#E2E3DB")
+            # self.canvas.create_window(450, 400, anchor=NW, window=self.epochs_label, tags='page-2')
+            # self.canvas.create_window(600, 400, anchor=NW, window=self.epochs, tags='page-2')
+
+            # # Learning rate field
+            # self.lr_field = Entry(self.canvas)
+            # self.lr_field.insert(END, '0.01')
+            # self.lr_label = Label(self.canvas, text='Learning Rate', bg="#E2E3DB")
+            # self.canvas.create_window(450, 450, anchor=NW, window=self.lr_label, tags='page-2')
+            # self.canvas.create_window(600, 450, anchor=NW, window=self.lr_field, tags='page-2')
+
+            # # Momentum Field
+            # self.mom_field = Entry(self.canvas)
+            # self.mom_field.insert(END, '0.5')
+            # self.mom_label = Label(self.canvas, text='Momentum', bg="#E2E3DB")
+            # self.canvas.create_window(450, 500, anchor=NW, window=self.mom_label, tags='page-2')
+            # self.canvas.create_window(600, 500, anchor=NW, window=self.mom_field, tags='page-2')
+
+            # # Use GPU field
+            # self.cuda_field = OptionMenu(self.canvas, self.cuda_clicked, *self.bool_dropdown)
+            # self.cuda_field.config(bg = "#E2E3DB")
+            # self.cuda_label = Label(self.canvas, text='GPU acceleration', bg="#E2E3DB")
+            # self.canvas.create_window(825, 200, anchor=NW, window=self.cuda_label, tags='page-2')
+            # self.canvas.create_window(975, 200, anchor=NW, window=self.cuda_field, tags='page-2')
+
+            # # Stepsize field
+            # self.step_field = Entry(self.canvas)
+            # self.step_field.insert(END, '50')
+            # self.step_label = Label(self.canvas, text='Step size', bg="#E2E3DB")
+            # self.canvas.create_window(825, 250, anchor=NW, window=self.step_label, tags='page-2')
+            # self.canvas.create_window(975, 250, anchor=NW, window=self.step_field, tags='page-2')
+
+            # # Gamma field
+            # self.gamma_field = Entry(self.canvas)
+            # self.gamma_field.insert(END, '0.5')
+            # self.gamma_label = Label(self.canvas, text='Gamma', bg="#E2E3DB")
+            # self.canvas.create_window(825, 300, anchor=NW, window=self.gamma_label, tags='page-2')
+            # self.canvas.create_window(975, 300, anchor=NW, window=self.gamma_field, tags='page-2')
+
+            # # Save menu
+            # self.save_field = OptionMenu(self.canvas, self.save_clicked, *self.bool_dropdown)
+            # self.save_field.config(bg = "#E2E3DB")
+            # self.save_label = Label(self.canvas, text='Save model', bg="#E2E3DB")
+            # self.canvas.create_window(825, 350, anchor=NW, window=self.save_label, tags='page-2')
+            # self.canvas.create_window(975, 350, anchor=NW, window=self.save_field, tags='page-2')
+
+            # # Number of workers
+            # self.num_workers_field = Entry(self.canvas)
+            # self.num_workers_field.insert(END, '50')
+            # self.num_workers_label = Label(self.canvas, text='# of workers', bg="#E2E3DB")
+            # self.canvas.create_window(825, 400, anchor=NW, window=self.num_workers_label, tags='page-2')
+            # self.canvas.create_window(975, 400, anchor=NW, window=self.num_workers_field, tags='page-2')
+
+            # # Number of poisoned workers
+            # self.pworkers_field = Entry(self.canvas)
+            # self.pworkers_field.insert(END, '25')
+            # self.pworkers_label = Label(self.canvas, text='# of poisoned workers', bg="#E2E3DB")
+            # self.canvas.create_window(825, 450, anchor=NW, window=self.pworkers_label, tags='page-2')
+            # self.canvas.create_window(975, 450, anchor=NW, window=self.pworkers_field, tags='page-2')
+
+            # # Log interval
+            # self.log_interval_field = Entry(self.canvas)
+            # self.log_interval_field.insert(END, '100')
+            # self.log_interval_label = Label(self.canvas, text='Log interval', bg="#E2E3DB")
+            # self.canvas.create_window(825, 500, anchor=NW, window=self.log_interval_label, tags='page-2')
+            # self.canvas.create_window(975, 500, anchor=NW, window=self.log_interval_field, tags='page-2')
+
+            # self.run_btn = Button(self, text='Run', command=run_btn_pressed)
+            # self.canvas.create_window(800, 650, window=self.run_btn, tags='run_btn')
+        
+        page_1()
 
     def r_page_1(self):
         self.clean()
