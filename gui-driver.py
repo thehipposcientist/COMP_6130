@@ -8,6 +8,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from PIL import ImageTk, Image
+import ujson
 
 class MainView(Tk):
     def __init__(self):
@@ -707,10 +708,10 @@ class MainView(Tk):
         def download_datasets():
             os.chdir(self.root_dir)
             os.chdir("Algs/Fairness/")
-            p = ["python generate_fedtask.py"]
+            p = ["python", "generate_fedtask.py"]
             subprocess.call(p)
-            # p = ["python main.py --task mnist_client100_dist0_beta0_noise0 --model cnn --method fedavg --num_rounds 20 --num_epochs 5 --learning_rate 0.215 --proportion 0.1 --batch_size 10 --train_rate 1 --eval_interval 1"]
-            # subprocess.call(p)
+            #p = ["python", "main.py"]
+            #subprocess.call(p)
             time.sleep(1)
             
         def donwload_btn_actions():
@@ -741,31 +742,36 @@ class MainView(Tk):
             self.main_thread.start()
 
         def run():
+
             os.chdir(self.root_dir)
             os.chdir("Algs/Fairness")
 
-            self.method = 'FedAvg'
+            self.method = 'fedavg'
 
-            if self.alg_clicked == 'FedAvg':
-                self.method = 'fedavg.py'
-            elif self.alg_clicked == 'FedProx':
-                self.method = 'fedprox.py'
-            elif self.alg_clicked == 'FedFV':
-                self.method = 'fedfv.py'        
+            if self.method_clicked == 'FedAvg':
+                self.method = 'fedavg'
+            elif self.method_clicked == 'FedProx':
+                self.method = 'fedprox'
+            elif self.method_clicked == 'FedFV':
+                self.method = 'fedfv'        
             
             # run algorithm with args
             # python main.py --task mnist_client100_dist0_beta0_noise0 --model cnn --method fedavg --num_rounds 20 --num_epochs 5 --learning_rate 0.215 --proportion 0.1 --batch_size 10 --train_rate 1 --eval_interval 1
             p = [
-                "python main.py",
-                "--task mnist_client100_dist0_beta0_noise0",
-                "--model cnn",
-                self.method.get(),
+                "python",
+                "main.py",
+                "--task", 
+                "mnist_client100_dist0_beta0_noise0",
+                "--model",
+                "cnn",
+                "--method",
+                self.method,
                 "--num_rounds",
                 self.num_rounds.get(),
                 "--num_epochs",
-                self.num_epochs.get(),
+                self.epochs.get(),
                 "--learning_rate",
-                self.learning_rate.get(),
+                self.lr.get(),
                 "--proportion",
                 self.proportion.get(),
                 "--batch_size",
@@ -803,7 +809,7 @@ class MainView(Tk):
             self.main_thread.start()
 
         def page_1():
-            self.canvas.create_text(800, 250, text="Federated Learning Fairness Algorithm Assessment", font=('Helvatica', 24), fill='Black', tags='del')
+            self.canvas.create_text(800, 250, text="Federated Learning Fairness Algorithm Assessment", font=('Helvatica', 24), fill='Black', tags='loading_data')
             self.canvas.create_text(800, 600, text='Download Datasets', font=('Helvatica', 30), fill='Black', tags='loading_data')
             self.canvas.create_text(800, 300, text='Using the MNIST Dataset', font=('Helvatica', 20), fill='Black', tags='loading_data')
             self.download_btn = Button(self, text='Download', command=download_btn_pressed)
@@ -835,28 +841,28 @@ class MainView(Tk):
             
             # Number of Rounds Size field
             self.num_rounds = Entry(self.canvas)
-            self.num_rounds.insert(END, '1000')
+            self.num_rounds.insert(END, '10')
             self.num_rounds_label = Label(self.canvas, text='Number of Rounds', bg="#E2E3DB")
             self.canvas.create_window(450, 250, anchor=NW, window=self.num_rounds_label, tags='page-2')
             self.canvas.create_window(600, 250, anchor=NW, window=self.num_rounds, tags='page-2')
 
             # Epochs field
             self.epochs = Entry(self.canvas)
-            self.epochs.insert(END, '10')
+            self.epochs.insert(END, '5')
             self.epochs_label = Label(self.canvas, text='Epochs', bg="#E2E3DB")
             self.canvas.create_window(450, 300, anchor=NW, window=self.epochs_label, tags='page-2')
             self.canvas.create_window(600, 300, anchor=NW, window=self.epochs, tags='page-2')
 
             # Learning rate field
-            self.lr_field = Entry(self.canvas)
-            self.lr_field.insert(END, '0.01')
+            self.lr = Entry(self.canvas)
+            self.lr.insert(END, '0.215')
             self.lr_label = Label(self.canvas, text='Learning Rate', bg="#E2E3DB")
             self.canvas.create_window(450, 350, anchor=NW, window=self.lr_label, tags='page-2')
-            self.canvas.create_window(600, 350, anchor=NW, window=self.lr_field, tags='page-2')
+            self.canvas.create_window(600, 350, anchor=NW, window=self.lr, tags='page-2')
 
             # Proportion field
             self.proportion = Entry(self.canvas)
-            self.proportion.insert(END, '0.01')
+            self.proportion.insert(END, '0.1')
             self.proportion_label = Label(self.canvas, text='Proportion', bg="#E2E3DB")
             self.canvas.create_window(450, 400, anchor=NW, window=self.proportion_label, tags='page-2')
             self.canvas.create_window(600, 400, anchor=NW, window=self.proportion, tags='page-2')
@@ -869,15 +875,15 @@ class MainView(Tk):
             self.canvas.create_window(600, 450, anchor=NW, window=self.batch_size, tags='page-2')
 
             # Training Rate field
-            self.training_rate = Entry(self.canvas)
-            self.training_rate.insert(END, '10')
-            self.training_rate_label = Label(self.canvas, text='Training Rate', bg="#E2E3DB")
-            self.canvas.create_window(450, 500, anchor=NW, window=self.training_rate_label, tags='page-2')
-            self.canvas.create_window(600, 500, anchor=NW, window=self.training_rate, tags='page-2')
+            self.train_rate = Entry(self.canvas)
+            self.train_rate.insert(END, '1')
+            self.train_rate_label = Label(self.canvas, text='Training Rate', bg="#E2E3DB")
+            self.canvas.create_window(450, 500, anchor=NW, window=self.train_rate_label, tags='page-2')
+            self.canvas.create_window(600, 500, anchor=NW, window=self.train_rate, tags='page-2')
 
             # Eval Interval field
             self.eval_interval = Entry(self.canvas)
-            self.eval_interval.insert(END, '10')
+            self.eval_interval.insert(END, '1')
             self.eval_interval_label = Label(self.canvas, text='Evaluation Interval', bg="#E2E3DB")
             self.canvas.create_window(450, 550, anchor=NW, window=self.eval_interval_label, tags='page-2')
             self.canvas.create_window(600, 550, anchor=NW, window=self.eval_interval, tags='page-2')
@@ -898,7 +904,7 @@ class MainView(Tk):
             self.exit_command()
         
         def s_f_btn_tasks():
-            p = ["mv", "temp.png", "Algs/DataPoisoning/saved_plots/acc_plot_"+self.method[:-3]+".png"]
+            p = ["mv", "temp.png", "Algs/Fairness/saved_plots/acc_plot_"+self.method[:-3]+".png"]
             subprocess.call(p)
             self.exit_command()
             pass
@@ -908,10 +914,14 @@ class MainView(Tk):
             self.canvas.delete('page-2')
             self.canvas.create_text(800, 150, text='Results', font=('Helvatica', 18), fill='Gray', tags='page-3')
             
-            FILEPATH = 'Algs/DataPoisoning/3000_results.csv'
-            df = pd.read_csv(FILEPATH, header=None)
+            path = 'Algs/Fairness/fedtask/mnist_client100_dist0_beta0_noise0/record/'
+            files = os.listdir(path)
+
+            for f in files:
+                results = pd.read_json(f, header=None)
+
             acc_plt = plt
-            acc_plt.plot(df[0], color='blue')
+            acc_plt.plot(results[0], color='blue')
             acc_plt.xlabel('Epochs')
             acc_plt.ylabel('Accuracy (%)')
             acc_plt.savefig('temp.png')
