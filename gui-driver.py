@@ -701,9 +701,243 @@ class MainView(Tk):
         pass
 
     def f_page_1(self):
+
         self.clean()
-        self.canvas.create_text(800, 450, text="Federated Learning Fairness Algorithm Assessment", font=('Helvatica', 24), fill='Gray', tags='del')
-        pass
+        
+        def download_datasets():
+            os.chdir(self.root_dir)
+            os.chdir("Algs/Fairness/")
+            p = ["python", "generate_fedtask.py"]
+            subprocess.call(p)
+            #p = ["python", "main.py"]
+            #subprocess.call(p)
+            time.sleep(1)
+            
+        def donwload_btn_actions():
+            self.canvas.delete('loading_data')
+            self.canvas.delete('download_btn')
+            self.canvas.create_text(800, 300, text='Downloading...', font=('Helvatica', 20), fill='Gray', tags='download')
+        
+        def download_btn_threads():
+            download_process = threading.Thread(target=download_datasets)
+            download_btn_act = threading.Thread(target=donwload_btn_actions)
+            self.pb.start()
+            download_btn_act.start()
+            download_process.start()
+            download_process.join()
+            download_btn_act.join()
+            self.pb.stop()
+            self.canvas.delete('download')
+            self.canvas.create_text(800, 300, 
+                text='Finished downloading', 
+                font=('Helvatica', 20), fill='Gray', tags='page-1')
+            self.next_btn = Button(self, text='Next', command=page_2)
+            self.canvas.create_window(800, 650, window=self.next_btn, tags = 'page-1')
+        
+        def download_btn_pressed():
+            self.pb = Progressbar(self.canvas, orient=HORIZONTAL, length=200, mode='indeterminate')
+            self.canvas.create_window(800,625, window=self.pb, tags='download')
+            self.main_thread = threading.Thread(target=download_btn_threads)
+            self.main_thread.start()
+
+        def run():
+
+            os.chdir(self.root_dir)
+            os.chdir("Algs/Fairness")
+
+            self.method = 'fedavg'
+
+            if self.method_clicked == 'FedAvg':
+                self.method = 'fedavg'
+            elif self.method_clicked == 'FedProx':
+                self.method = 'fedprox'
+            elif self.method_clicked == 'FedFV':
+                self.method = 'fedfv'        
+            
+            # run algorithm with args
+            # python main.py --task mnist_client100_dist0_beta0_noise0 --model cnn --method fedavg --num_rounds 20 --num_epochs 5 --learning_rate 0.215 --proportion 0.1 --batch_size 10 --train_rate 1 --eval_interval 1
+            p = [
+                "python",
+                "main.py",
+                "--task", 
+                "mnist_client100_dist0_beta0_noise0",
+                "--model",
+                "cnn",
+                "--method",
+                self.method,
+                "--num_rounds",
+                self.num_rounds.get(),
+                "--num_epochs",
+                self.epochs.get(),
+                "--learning_rate",
+                self.lr.get(),
+                "--proportion",
+                self.proportion.get(),
+                "--batch_size",
+                self.batch_size.get(),
+                "--train_rate",
+                self.train_rate.get(),
+                "--eval_interval",
+                self.eval_interval.get(),
+                ]
+
+            subprocess.call(p)
+            time.sleep(1)
+
+        def run_btn_actions():
+            self.canvas.delete('run_btn')
+            self.canvas.create_text(800, 650, text='Running', font=('Helvatica', 18), fill='Gray', tags='page-2')
+
+        def run_btn_threads():
+            run_process = threading.Thread(target=run)
+            run_btn_act = threading.Thread(target=run_btn_actions)
+            self.pb.start()
+            run_process.start()
+            run_btn_act.start()
+            run_btn_act.join()
+            run_process.join()
+            self.pb.stop()
+            self.canvas.delete('run')
+            self.next_btn = Button(self, text='Next', command=page_3)
+            self.canvas.create_window(800, 650, window=self.next_btn, tags = 'page-2')
+
+        def run_btn_pressed():
+            self.pb = Progressbar(self.canvas, orient=HORIZONTAL, length=200, mode='indeterminate')
+            self.canvas.create_window(800,625, window=self.pb, tags='run')
+            self.main_thread = threading.Thread(target=run_btn_threads)
+            self.main_thread.start()
+
+        def page_1():
+            self.canvas.create_text(800, 250, text="Federated Learning Fairness Algorithm Assessment", font=('Helvatica', 24), fill='Black', tags='loading_data')
+            self.canvas.create_text(800, 600, text='Download Datasets', font=('Helvatica', 30), fill='Black', tags='loading_data')
+            self.canvas.create_text(800, 300, text='Using the MNIST Dataset', font=('Helvatica', 20), fill='Black', tags='loading_data')
+            self.download_btn = Button(self, text='Download', command=download_btn_pressed)
+            self.canvas.create_window(800, 650, window=self.download_btn, tags='download_btn')
+        
+        def page_2():
+            self.canvas.delete('page-1')
+            self.canvas.create_text(800, 150, text='Set parameters', font=('Helvatica', 20), fill='Gray', tags='page-2')
+
+            # options
+            self.method_options = ['FedAvg', 
+                                'FedProx', 
+                                'FedFV']
+            self.bool_dropdown = ['True', 'False']
+
+            # Variables
+            self.method_clicked = StringVar(self.canvas, value='FedAvg')
+            self.training_clicked = StringVar(self.canvas, value='1')
+            self.cuda_clicked = StringVar(self.canvas, value='True')
+            self.save_clicked = StringVar(self.canvas, value='False')
+
+            # python main.py --task mnist_client100_dist0_beta0_noise0 --model cnn --method fedavg --num_rounds 20 --num_epochs 5 --learning_rate 0.215 --proportion 0.1 --batch_size 10 --train_rate 1 --eval_interval 1
+            # Method dropdown
+            self.method_drop = OptionMenu(self.canvas, self.method_clicked, *self.method_options)
+            self.method_drop.config(bg = "#E2E3DB")
+            self.method_label = Label(self.canvas, text='Method', bg="#E2E3DB")
+            self.canvas.create_window(450, 200, anchor=NW, window=self.method_label, tags='page-2')
+            self.canvas.create_window(600, 200, anchor=NW, window=self.method_drop, tags='page-2')
+            
+            # Number of Rounds Size field
+            self.num_rounds = Entry(self.canvas)
+            self.num_rounds.insert(END, '10')
+            self.num_rounds_label = Label(self.canvas, text='Number of Rounds', bg="#E2E3DB")
+            self.canvas.create_window(450, 250, anchor=NW, window=self.num_rounds_label, tags='page-2')
+            self.canvas.create_window(600, 250, anchor=NW, window=self.num_rounds, tags='page-2')
+
+            # Epochs field
+            self.epochs = Entry(self.canvas)
+            self.epochs.insert(END, '5')
+            self.epochs_label = Label(self.canvas, text='Epochs', bg="#E2E3DB")
+            self.canvas.create_window(450, 300, anchor=NW, window=self.epochs_label, tags='page-2')
+            self.canvas.create_window(600, 300, anchor=NW, window=self.epochs, tags='page-2')
+
+            # Learning rate field
+            self.lr = Entry(self.canvas)
+            self.lr.insert(END, '0.215')
+            self.lr_label = Label(self.canvas, text='Learning Rate', bg="#E2E3DB")
+            self.canvas.create_window(450, 350, anchor=NW, window=self.lr_label, tags='page-2')
+            self.canvas.create_window(600, 350, anchor=NW, window=self.lr, tags='page-2')
+
+            # Proportion field
+            self.proportion = Entry(self.canvas)
+            self.proportion.insert(END, '0.1')
+            self.proportion_label = Label(self.canvas, text='Proportion', bg="#E2E3DB")
+            self.canvas.create_window(450, 400, anchor=NW, window=self.proportion_label, tags='page-2')
+            self.canvas.create_window(600, 400, anchor=NW, window=self.proportion, tags='page-2')
+
+            # Batch Size field
+            self.batch_size = Entry(self.canvas)
+            self.batch_size.insert(END, '10')
+            self.batch_size_label = Label(self.canvas, text='Batch Size', bg="#E2E3DB")
+            self.canvas.create_window(450, 450, anchor=NW, window=self.batch_size_label, tags='page-2')
+            self.canvas.create_window(600, 450, anchor=NW, window=self.batch_size, tags='page-2')
+
+            # Training Rate field
+            self.train_rate = Entry(self.canvas)
+            self.train_rate.insert(END, '1')
+            self.train_rate_label = Label(self.canvas, text='Training Rate', bg="#E2E3DB")
+            self.canvas.create_window(450, 500, anchor=NW, window=self.train_rate_label, tags='page-2')
+            self.canvas.create_window(600, 500, anchor=NW, window=self.train_rate, tags='page-2')
+
+            # Eval Interval field
+            self.eval_interval = Entry(self.canvas)
+            self.eval_interval.insert(END, '1')
+            self.eval_interval_label = Label(self.canvas, text='Evaluation Interval', bg="#E2E3DB")
+            self.canvas.create_window(450, 550, anchor=NW, window=self.eval_interval_label, tags='page-2')
+            self.canvas.create_window(600, 550, anchor=NW, window=self.eval_interval, tags='page-2')
+
+            # Save menu
+            self.save_field = OptionMenu(self.canvas, self.save_clicked, *self.bool_dropdown)
+            self.save_field.config(bg = "#E2E3DB")
+            self.save_label = Label(self.canvas, text='Save model', bg="#E2E3DB")
+            self.canvas.create_window(825, 350, anchor=NW, window=self.save_label, tags='page-2')
+            self.canvas.create_window(975, 350, anchor=NW, window=self.save_field, tags='page-2')
+
+            self.run_btn = Button(self, text='Run', command=run_btn_pressed)
+            self.canvas.create_window(800, 650, window=self.run_btn, tags='run_btn')
+        
+        def finish_btn_tasks():
+            p = ["rm", "-rf", "temp.png"]
+            subprocess.call(p)
+            self.exit_command()
+        
+        def s_f_btn_tasks():
+            p = ["mv", "temp.png", "Algs/Fairness/saved_plots/acc_plot_"+self.method[:-3]+".png"]
+            subprocess.call(p)
+            self.exit_command()
+            pass
+
+        def page_3():
+            os.chdir(self.root_dir)
+            self.canvas.delete('page-2')
+            self.canvas.create_text(800, 150, text='Results', font=('Helvatica', 18), fill='Gray', tags='page-3')
+            
+            path = 'Algs/Fairness/fedtask/mnist_client100_dist0_beta0_noise0/record/'
+            files = os.listdir(path)
+
+            for f in files:
+                results = pd.read_json(f, header=None)
+
+            acc_plt = plt
+            acc_plt.plot(results[0], color='blue')
+            acc_plt.xlabel('Epochs')
+            acc_plt.ylabel('Accuracy (%)')
+            acc_plt.savefig('temp.png')
+
+            self.acc_plot_fig = (Image.open("temp.png"))
+            self.acc_plot_fig = ImageTk.PhotoImage(self.acc_plot_fig)
+
+            self.canvas.create_image(500, 175, image=self.acc_plot_fig, anchor=NW, tags='page-3')
+            self.canvas.create_text(600, 675, text="Final Accuracy: " + str(df[0][int(self.epochs.get()) - 1]), 
+                                    font=('Helvatica', 18), fill='Gray', tags='page-3')
+        
+            self.finish_btn = Button(self, text='Exit', command=finish_btn_tasks)
+            self.canvas.create_window(1100, 675, window=self.finish_btn, tags = 'page-3')
+            self.s_f_btn = Button(self, text='Save end Exit', command=s_f_btn_tasks)
+            self.canvas.create_window(1000, 675, window=self.s_f_btn, tags='page-3')
+
+        page_1()
 
     def exit_command(self):
         self.quit()
