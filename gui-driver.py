@@ -74,7 +74,7 @@ class MainView(Tk):
 
          # Dropdown menu privacy
         self.priv_options = [
-            "Privacy",
+            "Inverting Gradients",
         ]
         self.priv_clicked = StringVar(self)
         self.priv_clicked.set( "Select" )
@@ -375,123 +375,143 @@ class MainView(Tk):
 
         
         def page_1():
-            self.canvas.create_text(800, 150, text='Set parameters', font=('Helvatica', 20), fill='Gray', tags='page-2')
+            self.canvas.create_text(800, 150, text='Set parameters', font=('Helvatica', 20), fill='Gray', tags='page-1')
 
             # options
-            self.dataset_options = ['CIFAR10']
-            self.model_options = ['ConvNet',
-                                'ConvNet64', 
-                                'ResNet20-4']
             self.bool_dropdown = ['True', 'False']
 
             # Variables
-            self.model_clicked = StringVar(self.canvas, value='ConvNet')
-            self.dataset_clicked = StringVar(self.canvas, value='CIFAR10')
-            self.training_clicked = StringVar(self.canvas, value='1')
-            self.cuda_clicked = StringVar(self.canvas, value='True')
-            self.save_clicked = StringVar(self.canvas, value='False')
+            self.signed_clicked = StringVar(self.canvas, value='True')
+            self.boxed_clicked = StringVar(self.canvas, value='True')
+            self.lr_decay_clicked = StringVar(self.canvas, value='True')
 
-            # Algorithm dropdown
-            self.model_drop = OptionMenu(self.canvas, self.model_clicked, *self.model_options)
-            self.model_drop.config(bg = "#E2E3DB")
-            self.model_label = Label(self.canvas, text='Model', bg="#E2E3DB")
-            self.canvas.create_window(450, 200, anchor=NW, window=self.model_label, tags='page-1')
-            self.canvas.create_window(600, 200, anchor=NW, window=self.model_drop, tags='page-1')
+            # Signed dropdown
+            self.signed_drop = OptionMenu(self.canvas, self.signed_clicked, *self.bool_dropdown)
+            self.signed_drop.config(bg = "#E2E3DB")
+            self.signed_label = Label(self.canvas, text='Signed', bg="#E2E3DB")
+            self.canvas.create_window(450, 200, anchor=NW, window=self.signed_label, tags='page-1m')
+            self.canvas.create_window(600, 200, anchor=NW, window=self.signed_drop, tags='page-1m')
 
-            # Dataset dropdown
-            self.dataset_drop = OptionMenu(self.canvas, self.dataset_clicked, *self.dataset_options)
-            self.dataset_drop.config(bg = "#E2E3DB")
-            self.dataset_label = Label(self.canvas, text='Dataset', bg="#E2E3DB")
-            self.canvas.create_window(450, 250, anchor=NW, window=self.dataset_label, tags='page-2')
-            self.canvas.create_window(600, 250, anchor=NW, window=self.dataset_drop, tags='page-2')
+            # Boxed dropdown
+            self.boxed_drop = OptionMenu(self.canvas, self.boxed_clicked, *self.bool_dropdown)
+            self.boxed_drop.config(bg = "#E2E3DB")
+            self.boxed_label = Label(self.canvas, text='Boxed', bg="#E2E3DB")
+            self.canvas.create_window(450, 250, anchor=NW, window=self.boxed_label, tags='page-1m')
+            self.canvas.create_window(600, 250, anchor=NW, window=self.boxed_drop, tags='page-1m')
 
-            # # Batch size field
-            # self.batch_size = Entry(self.canvas)
-            # self.batch_size.insert(END, '10')
-            # self.batch_size_label = Label(self.canvas, text='Batch Size', bg="#E2E3DB")
-            # self.canvas.create_window(450, 300, anchor=NW, window=self.batch_size_label, tags='page-2')
-            # self.canvas.create_window(600, 300, anchor=NW, window=self.batch_size, tags='page-2')
+            # Optim field
+            self.optim = Entry(self.canvas)
+            self.optim.insert(END, 'adam')
+            self.optim_label = Label(self.canvas, text='Optimizer', bg="#E2E3DB")
+            self.canvas.create_window(450, 300, anchor=NW, window=self.optim_label, tags='page-1m')
+            self.canvas.create_window(600, 300, anchor=NW, window=self.optim, tags='page-1m')
             
-            # # Test Batch Size field
-            # self.tbatch_field = Entry(self.canvas)
-            # self.tbatch_field.insert(END, '1000')
-            # self.tbatch_label = Label(self.canvas, text='Test Batch Size', bg="#E2E3DB")
-            # self.canvas.create_window(450, 350, anchor=NW, window=self.tbatch_label, tags='page-2')
-            # self.canvas.create_window(600, 350, anchor=NW, window=self.tbatch_field, tags='page-2')
+            # max iter field
+            self.max_iter_field = Entry(self.canvas)
+            self.max_iter_field.insert(END, '4000')
+            self.max_iter_label = Label(self.canvas, text='Max iterations', bg="#E2E3DB")
+            self.canvas.create_window(450, 350, anchor=NW, window=self.max_iter_label, tags='page-1m')
+            self.canvas.create_window(600, 350, anchor=NW, window=self.max_iter_field, tags='page-1m')
 
-            # # Epochs field
-            # self.epochs = Entry(self.canvas)
-            # self.epochs.insert(END, '10')
-            # self.epochs_label = Label(self.canvas, text='Epochs', bg="#E2E3DB")
-            # self.canvas.create_window(450, 400, anchor=NW, window=self.epochs_label, tags='page-2')
-            # self.canvas.create_window(600, 400, anchor=NW, window=self.epochs, tags='page-2')
+            # lr field
+            self.lr_field = Entry(self.canvas)
+            self.lr_field.insert(END, '0.1')
+            self.lr_label = Label(self.canvas, text='Learning rate', bg="#E2E3DB")
+            self.canvas.create_window(825, 200, anchor=NW, window=self.lr_label, tags='page-1m')
+            self.canvas.create_window(975, 200, anchor=NW, window=self.lr_field, tags='page-1m')
 
-            # # Learning rate field
-            # self.lr_field = Entry(self.canvas)
-            # self.lr_field.insert(END, '0.01')
-            # self.lr_label = Label(self.canvas, text='Learning Rate', bg="#E2E3DB")
-            # self.canvas.create_window(450, 450, anchor=NW, window=self.lr_label, tags='page-2')
-            # self.canvas.create_window(600, 450, anchor=NW, window=self.lr_field, tags='page-2')
+            # lr deacy drop
+            self.lr_decay_drop = OptionMenu(self.canvas, self.lr_decay_clicked, *self.bool_dropdown)
+            self.lr_decay_drop.config(bg = "#E2E3DB")
+            self.lr_decay_label = Label(self.canvas, text='Learning rate decay', bg="#E2E3DB")
+            self.canvas.create_window(825, 250, anchor=NW, window=self.lr_decay_label, tags='page-1m')
+            self.canvas.create_window(975, 250, anchor=NW, window=self.lr_decay_drop, tags='page-1m')
 
-            # # Momentum Field
-            # self.mom_field = Entry(self.canvas)
-            # self.mom_field.insert(END, '0.5')
-            # self.mom_label = Label(self.canvas, text='Momentum', bg="#E2E3DB")
-            # self.canvas.create_window(450, 500, anchor=NW, window=self.mom_label, tags='page-2')
-            # self.canvas.create_window(600, 500, anchor=NW, window=self.mom_field, tags='page-2')
+            # restarts field
+            self.res_field = Entry(self.canvas)
+            self.res_field.insert(END, '1')
+            self.res_label = Label(self.canvas, text='Restarts', bg="#E2E3DB")
+            self.canvas.create_window(825, 300, anchor=NW, window=self.res_label, tags='page-1m')
+            self.canvas.create_window(975, 300, anchor=NW, window=self.res_field, tags='page-1m')
 
-            # # Use GPU field
-            # self.cuda_field = OptionMenu(self.canvas, self.cuda_clicked, *self.bool_dropdown)
-            # self.cuda_field.config(bg = "#E2E3DB")
-            # self.cuda_label = Label(self.canvas, text='GPU acceleration', bg="#E2E3DB")
-            # self.canvas.create_window(825, 200, anchor=NW, window=self.cuda_label, tags='page-2')
-            # self.canvas.create_window(975, 200, anchor=NW, window=self.cuda_field, tags='page-2')
+            # Original Image
+            self.o_img = (Image.open("Algs/invertinggradients/auto.jpg"))
+            self.o_img = self.o_img.resize((300, 300), Image.ANTIALIAS)
+            self.o_img = ImageTk.PhotoImage(self.o_img)
 
-            # # Stepsize field
-            # self.step_field = Entry(self.canvas)
-            # self.step_field.insert(END, '50')
-            # self.step_label = Label(self.canvas, text='Step size', bg="#E2E3DB")
-            # self.canvas.create_window(825, 250, anchor=NW, window=self.step_label, tags='page-2')
-            # self.canvas.create_window(975, 250, anchor=NW, window=self.step_field, tags='page-2')
+            self.canvas.create_image(472, 400, image=self.o_img, anchor=NW, tags='page-1')
+            self.canvas.create_text((625, 725), text="Original Image", font=('Helvatica', 20), fill='Gray', tags = 'page-1')
 
-            # # Gamma field
-            # self.gamma_field = Entry(self.canvas)
-            # self.gamma_field.insert(END, '0.5')
-            # self.gamma_label = Label(self.canvas, text='Gamma', bg="#E2E3DB")
-            # self.canvas.create_window(825, 300, anchor=NW, window=self.gamma_label, tags='page-2')
-            # self.canvas.create_window(975, 300, anchor=NW, window=self.gamma_field, tags='page-2')
+            def run():
+                os.chdir(self.root_dir)
+                os.chdir("Algs/invertinggradients")
+                
+                # run algorithm with args
+                p = [
+                    "python",
+                    'gui-call.py',
+                    "--signed",
+                    self.signed_clicked.get(),
+                    "--boxed",
+                    self.boxed_clicked.get(),
+                    "--max_iterations",
+                    self.max_iter_field.get(),
+                    "--lr",
+                    self.lr_field.get(),
+                    "--lr_decay",
+                    self.lr_decay_clicked.get(),
+                    "--optim",
+                    self.optim.get(),
+                    "--restarts",
+                    self.res_field.get()]
 
-            # # Save menu
-            # self.save_field = OptionMenu(self.canvas, self.save_clicked, *self.bool_dropdown)
-            # self.save_field.config(bg = "#E2E3DB")
-            # self.save_label = Label(self.canvas, text='Save model', bg="#E2E3DB")
-            # self.canvas.create_window(825, 350, anchor=NW, window=self.save_label, tags='page-2')
-            # self.canvas.create_window(975, 350, anchor=NW, window=self.save_field, tags='page-2')
+                subprocess.call(p)
+                time.sleep(1)
 
-            # # Number of workers
-            # self.num_workers_field = Entry(self.canvas)
-            # self.num_workers_field.insert(END, '50')
-            # self.num_workers_label = Label(self.canvas, text='# of workers', bg="#E2E3DB")
-            # self.canvas.create_window(825, 400, anchor=NW, window=self.num_workers_label, tags='page-2')
-            # self.canvas.create_window(975, 400, anchor=NW, window=self.num_workers_field, tags='page-2')
+            def show_recon_img():
+                self.r_img = (Image.open("auto-recon.jpg"))
+                self.r_img = self.r_img.resize((300, 300), Image.ANTIALIAS)
+                self.r_img = ImageTk.PhotoImage(self.r_img)
 
-            # # Number of poisoned workers
-            # self.pworkers_field = Entry(self.canvas)
-            # self.pworkers_field.insert(END, '25')
-            # self.pworkers_label = Label(self.canvas, text='# of poisoned workers', bg="#E2E3DB")
-            # self.canvas.create_window(825, 450, anchor=NW, window=self.pworkers_label, tags='page-2')
-            # self.canvas.create_window(975, 450, anchor=NW, window=self.pworkers_field, tags='page-2')
+                self.canvas.create_image(875, 400, image=self.r_img, anchor=NW, tags='page-1')
+                self.canvas.create_text((1025, 725), text="Reconstructed Image", font=('Helvatica', 20), fill='Gray', tags = 'page-1')
 
-            # # Log interval
-            # self.log_interval_field = Entry(self.canvas)
-            # self.log_interval_field.insert(END, '100')
-            # self.log_interval_label = Label(self.canvas, text='Log interval', bg="#E2E3DB")
-            # self.canvas.create_window(825, 500, anchor=NW, window=self.log_interval_label, tags='page-2')
-            # self.canvas.create_window(975, 500, anchor=NW, window=self.log_interval_field, tags='page-2')
+            def run_btn_actions():
+                self.canvas.delete('run_btn')
+                self.canvas.create_text(800, 750, text='Reconstructing...', font=('Helvatica', 18), fill='Gray', tags='run')
 
-            # self.run_btn = Button(self, text='Run', command=run_btn_pressed)
-            # self.canvas.create_window(800, 650, window=self.run_btn, tags='run_btn')
+            def run_btn_threads():
+                run_process = threading.Thread(target=run)
+                run_btn_act = threading.Thread(target=run_btn_actions)
+                self.pb.start()
+                run_process.start()
+                run_btn_act.start()
+                run_btn_act.join()
+                run_process.join()
+                self.pb.stop()
+                show_recon_img()
+                self.canvas.delete('run')
+                self.next_btn = Button(self, text='Show Statistics', command=page_2)
+                self.canvas.create_window(825, 750, window=self.next_btn, tags = 'page-1')
+
+            def run_btn_pressed():
+                self.pb = Progressbar(self.canvas, orient=HORIZONTAL, length=200, mode='indeterminate')
+                self.canvas.create_window(800,725, window=self.pb, tags='run')
+                self.main_thread = threading.Thread(target=run_btn_threads)
+                self.main_thread.start()
+
+            self.run_btn = Button(self, text='Reconstruct Image', command=run_btn_pressed)
+            self.canvas.create_window(800, 750, window=self.run_btn, tags='run_btn')
         
+        def page_2():
+            self.canvas.delete('page-1','page-1m')
+            self.stat_img = (Image.open("stats.png"))
+            self.stat_img = self.stat_img.resize((800, 600), Image.ANTIALIAS)
+            self.stat_img = ImageTk.PhotoImage(self.stat_img)
+
+            self.canvas.create_image(800-400, 450-300, image=self.stat_img, anchor=NW, tags='page-2')
+            self.canvas.create_text((800, 450+325), text="Statistics", font=('Helvatica', 20), fill='Gray', tags = 'page-1')
+            
         page_1()
 
     def r_page_1(self):
