@@ -41,7 +41,7 @@ axes[0].plot([np.mean(acc_t) for acc_t in acc_plain], label="Plain")
 axes[0].plot(
     [np.mean(acc_t) for acc_t in acc_disg], label=r"Disguised $\sigma$ $\gamma=1$"
 )
-axes[0].set_ylim(70, 92)
+axes[0].set_ylim(50, 92)
 axes[0].legend()
 axes[0].set_ylabel("Accuracy")
 axes[0].set_xlabel("# rounds")

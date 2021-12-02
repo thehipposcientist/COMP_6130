@@ -737,8 +737,6 @@ class MainView(Tk):
             self.pb.stop()
 
         def callback():
-            # create dataset
-
             home = os.getcwd()
             os.chdir("Algs/Labs-Federated-Learning")
             print(os.getcwd())
@@ -751,22 +749,17 @@ class MainView(Tk):
                 pass
 
             self.submit_btn.destroy()
-            self.next_btn = Button(self, text='Next', command=results_page)
+            self.next_btn = Button(self, text='Exit', command=results_page)
             self.canvas.create_window(700, 600, window=self.next_btn,tags='page-1')
 
         def page_1():
+            # TODO add other options to run
             self.dataset_options = ['MNIST-iid']
             self.type_options = ['FL', 'plain', 'disguised']
-            #self.model_options = ['cnn', 'mfl']
-            #self.training_options = ['1', '2', '3']
 
             # variables
             self.dataset_clicked = StringVar(self.canvas, value='MNIST-iid')
             self.type_clicked = StringVar(self.canvas, value='FL')
-            #self.learning_rate = StringVar(self.canvas, value='0.01')
-            #self.alg_clicked = StringVar(self.canvas, value='FedGen')
-            #self.model_clicked = StringVar(self.canvas, value='cnn')
-            #self.training_clicked = StringVar(self.canvas, value='1')
 
             # dataset dropdown
             self.dataset_drop = OptionMenu(self.canvas, self.dataset_clicked, *self.dataset_options)
@@ -798,8 +791,7 @@ class MainView(Tk):
             self.canvas.create_window(700, 600, window=self.submit_btn,tags='page-1')
 
         def results_page():
-            self.canvas.delete('page-1')
-            self.canvas.create_text(800, 150, text='Results', font=('Helvatica', 18), fill='Gray', tags='page-2')
+            self.exit_command()
 
         page_1()
 
