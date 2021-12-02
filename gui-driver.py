@@ -9,6 +9,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from PIL import ImageTk, Image
 import h5py
+import json
 
 class MainView(Tk):
     def __init__(self):
@@ -226,7 +227,7 @@ class MainView(Tk):
 
             self.submit_btn.destroy()
             self.next_btn = Button(self, text='Next', command=results_page)
-            self.canvas.create_window(700, 600, window=self.next_btn,tags='page-1')#.place(x=720,y=600), tags = 'page-1')
+            self.canvas.create_window(700, 600, window=self.next_btn,tags='page-1')
 
 
         def page_1():
@@ -264,96 +265,105 @@ class MainView(Tk):
             self.global_itr_field = Entry(self.canvas)
             self.global_itr_field.insert(END, '5')
             self.global_itr_label = Label(self.canvas, text='Global Iterations', bg="#E2E3DB")
-            self.canvas.create_window(800, 200, window=self.global_itr_label,tags='page-1')#.place(x=800,y=200),tags='page-1')
-            self.canvas.create_window(950, 200, window=self.global_itr_field,tags='page-1')#.place(x=950,y=200),tags='page-1')
+            self.canvas.create_window(800, 200, window=self.global_itr_label,tags='page-1')
+            self.canvas.create_window(950, 200, window=self.global_itr_field,tags='page-1')
 
             # personal learning rate field
             self.per_learning_rate_field = Entry(self.canvas)
             self.per_learning_rate_field.insert(END, '0.01')
             self.per_learning_rate_label = Label(self.canvas, text='Personal Learning Rate', bg="#E2E3DB")
-            self.canvas.create_window(400, 500, window=self.per_learning_rate_label,tags='page-1')#.place(x=450,y=500),tags='page-1')
-            self.canvas.create_window(600, 500, window=self.per_learning_rate_field,tags='page-1')#.place(x=600,y=500),tags='page-1')
+            self.canvas.create_window(400, 500, window=self.per_learning_rate_label,tags='page-1')
+            self.canvas.create_window(600, 500, window=self.per_learning_rate_field,tags='page-1')
 
             # users size field
             self.users_field = Entry(self.canvas)
             self.users_field.insert(END, '10')
             self.users_label = Label(self.canvas, text='Users', bg="#E2E3DB")
-            self.canvas.create_window(800, 450, window=self.users_label,tags='page-1')#.place(x=800,y=450),tags='page-1')
-            self.canvas.create_window(950, 450, window=self.users_field,tags='page-1')#.place(x=950,y=450),tags='page-1')
+            self.canvas.create_window(800, 450, window=self.users_label,tags='page-1')
+            self.canvas.create_window(950, 450, window=self.users_field,tags='page-1')
 
             # epochs field
             self.epoch_field = Entry(self.canvas)
             self.epoch_field.insert(END, '20')
             self.epoch_label = Label(self.canvas, text='Epochs', bg="#E2E3DB")
-            self.canvas.create_window(400, 450, window=self.epoch_label,tags='page-1')#.place(x=450,y=450),tags='page-1')
-            self.canvas.create_window(600, 450, window=self.epoch_field,tags='page-1')#.place(x=600,y=450),tags='page-1')
+            self.canvas.create_window(400, 450, window=self.epoch_label,tags='page-1')
+            self.canvas.create_window(600, 450, window=self.epoch_field,tags='page-1')
 
             # iterations dropdown
             self.training_drop = OptionMenu(self.canvas, self.training_clicked, *self.training_options)
             self.training_drop.config(bg = "#E2E3DB")
             self.training_label = Label(self.canvas, text='Training Rounds', bg="#E2E3DB")
-            self.canvas.create_window(800, 400, window=self.training_label,tags='page-1')#.place(x=800,y=400),tags='page-1')
-            self.canvas.create_window(950, 400, window=self.training_drop,tags='page-1')#.place(x=950,y=400),tags='page-1')
+            self.canvas.create_window(800, 400, window=self.training_label,tags='page-1')
+            self.canvas.create_window(950, 400, window=self.training_drop,tags='page-1')
 
             # batch size field
             self.batch_field = Entry(self.canvas)
             self.batch_field.insert(END, '32')
             self.batch_label = Label(self.canvas, text='Number of Batches', bg="#E2E3DB")
-            self.canvas.create_window(400, 400, window=self.batch_label,tags='page-1')#.place(x=450,y=400),tags='page-1')
-            self.canvas.create_window(600, 400, window=self.batch_field,tags='page-1')#.place(x=600,y=400),tags='page-1')
+            self.canvas.create_window(400, 400, window=self.batch_label,tags='page-1')
+            self.canvas.create_window(600, 400, window=self.batch_field,tags='page-1')
 
             # classes field
             self.classes_field = Entry(self.canvas)
             self.classes_field.insert(END, '10')
             self.classes_label = Label(self.canvas, text='Classes', bg="#E2E3DB")
-            self.canvas.create_window(800, 350, window=self.classes_label,tags='page-1')#.place(x=800,y=350),tags='page-1')
-            self.canvas.create_window(950, 350, window=self.classes_field,tags='page-1')#.place(x=950,y=350),tags='page-1')
+            self.canvas.create_window(800, 350, window=self.classes_label,tags='page-1')
+            self.canvas.create_window(950, 350, window=self.classes_field,tags='page-1')
 
             # sampling ratio field
             self.sampling_field = Entry(self.canvas)
             self.sampling_field.insert(END, '0.5')
             self.sampling_label = Label(self.canvas, text='Sampling Ratio', bg="#E2E3DB")
-            self.canvas.create_window(400, 350, window=self.sampling_label,tags='page-1')#.place(x=450,y=350),tags='page-1')
-            self.canvas.create_window(600, 350, window=self.sampling_field,tags='page-1')#.place(x=600,y=350),tags='page-1')
+            self.canvas.create_window(400, 350, window=self.sampling_label,tags='page-1')
+            self.canvas.create_window(600, 350, window=self.sampling_field,tags='page-1')
 
             # alpha field
             self.alpha_field = Entry(self.canvas)
             self.alpha_field.insert(END, '0.1')
             self.alpha_label = Label(self.canvas, text='Alpha', bg="#E2E3DB")
-            self.canvas.create_window(800, 300, window=self.alpha_label,tags='page-1')#.place(x=800,y=300),tags='page-1')
-            self.canvas.create_window(950, 300, window=self.alpha_field,tags='page-1')#.place(x=950,y=300),tags='page-1')
+            self.canvas.create_window(800, 300, window=self.alpha_label,tags='page-1')
+            self.canvas.create_window(950, 300, window=self.alpha_field,tags='page-1')
 
             # model dropdown
             self.model_drop = OptionMenu(self.canvas, self.model_clicked, *self.model_options)
             self.model_drop.config(bg = "#E2E3DB")
             self.model_label = Label(self.canvas, text='Model', bg="#E2E3DB")
-            self.canvas.create_window(400, 300, window=self.model_label,tags='page-1')#.place(x=450,y=300),tags='page-1')
-            self.canvas.create_window(600, 300, window=self.model_drop,tags='page-1')#.place(x=600,y=300),tags='page-1')
+            self.canvas.create_window(400, 300, window=self.model_label,tags='page-1')
+            self.canvas.create_window(600, 300, window=self.model_drop,tags='page-1')
 
             # dataset dropdown
             self.dataset_drop = OptionMenu(self.canvas, self.dataset_clicked, *self.dataset_options)
             self.dataset_drop.config(bg = "#E2E3DB")
             self.dataset_label = Label(self.canvas, text='Dataset', bg="#E2E3DB")
-            self.canvas.create_window(400, 200, window=self.dataset_label,tags='page-1')#.place(x=450,y=200),tags='page-1')
-            self.canvas.create_window(600, 200, window=self.dataset_drop,tags='page-1')#.place(x=600,y=200),tags='page-1')
+            self.canvas.create_window(400, 200, window=self.dataset_label,tags='page-1')
+            self.canvas.create_window(600, 200, window=self.dataset_drop,tags='page-1')
 
             # algorithm dropdown
             self.alg_drop = OptionMenu(self.canvas, self.alg_clicked, *self.alg_options)
             self.alg_drop.config(bg = "#E2E3DB")
             self.alg_label = Label(self.canvas, text='Algorithm', bg="#E2E3DB")
-            self.canvas.create_window(400, 250, window=self.alg_label,tags='page-1')#.place(x=450,y=250),tags='page-1')
-            self.canvas.create_window(600, 250, window=self.alg_drop,tags='page-1')#.place(x=600,y=250),tags='page-1')
+            self.canvas.create_window(400, 250, window=self.alg_label,tags='page-1')
+            self.canvas.create_window(600, 250, window=self.alg_drop,tags='page-1')
 
             # learning rate field
             self.learning_rate_field = Entry(self.canvas)
             self.learning_rate_field.insert(END, '0.01')
             self.learning_rate_label = Label(self.canvas, text='Learning Rate', bg="#E2E3DB")
-            self.canvas.create_window(800, 250, window=self.learning_rate_label,tags='page-1')#.place(x=800,y=250),tags='page-1')
-            self.canvas.create_window(950, 250, window=self.learning_rate_field,tags='page-1')#.place(x=950,y=250),tags='page-1')
+            self.canvas.create_window(800, 250, window=self.learning_rate_label,tags='page-1')
+            self.canvas.create_window(950, 250, window=self.learning_rate_field,tags='page-1')
 
             # submit button
             self.submit_btn = Button(self.canvas, text="Submit", width=10, command=thread_init)
-            self.canvas.create_window(700, 600, window=self.submit_btn,tags='page-1')#.place(x=700,y=600),tags='page-1')
+            self.canvas.create_window(700, 600, window=self.submit_btn,tags='page-1')
+
+        def finish_btn_tasks():
+            p = ["rm", "-rf", "effectiveness_results.txt"]
+            subprocess.call(p)
+            self.exit_command()
+
+        def s_f_btn_tasks():
+            self.exit_command()
+            pass
 
         def results_page():
             self.canvas.delete('page-1')
@@ -361,12 +371,13 @@ class MainView(Tk):
 
             filename = "results/Mnist-alpha0.1-ratio0.5_FedGen_0.01_10u_32b_20_0_embed0.h5"
             res = {}
-            x1 = 600
-            x2 = 800
+            x1 = 400
+            x2 = 600
             offset_y = 200
             with h5py.File(filename, "r") as f:
                 for x in list(f.keys()):
                     res[x] = list(f[x])
+                f.close()
 
             self.res_key = Label(self.canvas, text="Key", bg="#E2E3DB", width=20, anchor="e")
             self.canvas.create_window(x1, offset_y, window=self.res_key,tags='res-page')
@@ -374,13 +385,28 @@ class MainView(Tk):
             self.canvas.create_window(x2, offset_y, window=self.res_val,tags='res-page')
 
             for k,v in res.items():
+                offset_x = 600
                 offset_y += 20
                 if len(v) == 0:
-                    v = [0]
+                    v = [0] * int(self.global_itr_field.get())
+                if len(v) > 5:
+                    v = v[0:5]
                 self.res_key = Label(self.canvas, text=k + ":", bg="#E2E3DB", width=20, anchor="e")
                 self.canvas.create_window(x1, offset_y, window=self.res_key,tags='res-page')
-                self.res_val = Label(self.canvas, text=v[0], bg="#E2E3DB", width=20)
-                self.canvas.create_window(x2, offset_y, window=self.res_val,tags='res-page')
+                for num in v:
+                    num = round(num,3)
+                    self.res_val = Label(self.canvas, text=num, bg="#E2E3DB", width=10)
+                    self.canvas.create_window(offset_x, offset_y, window=self.res_val,tags='res-page')
+                    offset_x += 100
+            os.chdir('results')
+            with open('effectiveness_results.txt', 'w') as f:
+                f.write(json.dumps(res))
+                f.close()
+
+            self.finish_btn = Button(self, text='Exit', command=finish_btn_tasks)
+            self.canvas.create_window(1100, 675, window=self.finish_btn, tags = 'res-page')
+            self.s_f_btn = Button(self, text='Save end Exit', command=s_f_btn_tasks)
+            self.canvas.create_window(1000, 675, window=self.s_f_btn, tags='res-page')
 
         page_1()
 
