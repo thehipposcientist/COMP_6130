@@ -831,9 +831,9 @@ class MainView(Tk):
                 self.eval_interval.get(),
                 ]
 
-            # tic = time.perf_counter()
+            self.tic = time.perf_counter()
             subprocess.call(p)
-
+            self.toc = time.perf_counter()
             time.sleep(1)
 
         def run_btn_actions():
@@ -986,8 +986,10 @@ class MainView(Tk):
             self.acc_plot_fig = ImageTk.PhotoImage(self.acc_plot_fig)
 
             self.canvas.create_image(500, 175, image=self.acc_plot_fig, anchor=NW, tags='page-3')
-            self.canvas.create_text(600, 675, text="Final Accuracy: " + str(accuracy[len(accuracy-1)][int(self.epochs.get()) - 1]), 
+            self.canvas.create_text(600, 675, text="Final Accuracy: " + str(accuracy[int(self.num_rounds.get()) - 1]), 
                                     font=('Helvatica', 18), fill='Gray', tags='page-3')
+            self.canvas.create_text(600, 715, text="Elapsed time: " + str(self.toc - self.tic), 
+                                    font=('Helvatica', 18), fill='Gray', tags='page-3')                        
         
             self.finish_btn = Button(self, text='Exit', command=finish_btn_tasks)
             self.canvas.create_window(1100, 675, window=self.finish_btn, tags = 'page-3')
