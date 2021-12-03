@@ -743,7 +743,7 @@ class MainView(Tk):
         self.canvas.create_text(800, 450, text="Certified Robustness", font=('Helvatica', 24), fill='Gray', tags = 'del')
         pass
 
-     def f_page_1(self):
+    def f_page_1(self):
 
         self.clean()
         
