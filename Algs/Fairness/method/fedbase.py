@@ -1,8 +1,8 @@
 import numpy as np
-from utils import fmodule
+from util import fmodule
 import copy
 from torch.utils.data import DataLoader
-from utils.fmodule import device,lossfunc,Optim
+from util.fmodule import device,lossfunc,Optim
 from multiprocessing import Pool as ThreadPool
 import time
 

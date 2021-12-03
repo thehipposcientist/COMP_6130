@@ -831,7 +831,9 @@ class MainView(Tk):
                 self.eval_interval.get(),
                 ]
 
+            # tic = time.perf_counter()
             subprocess.call(p)
+
             time.sleep(1)
 
         def run_btn_actions():

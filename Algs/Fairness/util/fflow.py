@@ -6,7 +6,7 @@ import os.path
 import importlib
 import os
 import ujson
-import utils.fmodule
+import util.fmodule
 
 sample_list=['uniform', 'md']
 agg_list=['uniform', 'weighted_scale', 'weighted_com']
@@ -66,10 +66,10 @@ def initialize(option):
     print("init fedtask...", end='')
     bmk = option['task'][:option['task'].find('_')]
     model_path = '%s.%s.%s.%s' % ('benchmark', bmk, 'model', option['model'])
-    utils.fmodule.device = torch.device('cuda:{}'.format(option['gpu']) if torch.cuda.is_available() and option['gpu'] != -1 else 'cpu')
-    utils.fmodule.lossfunc = getattr(importlib.import_module(model_path), 'Loss')()
-    utils.fmodule.Optim = getattr(importlib.import_module('torch.optim'), option['optimizer'])
-    utils.fmodule.Model = getattr(importlib.import_module(model_path), 'Model')
+    util.fmodule.device = torch.device('cuda:{}'.format(option['gpu']) if torch.cuda.is_available() and option['gpu'] != -1 else 'cpu')
+    util.fmodule.lossfunc = getattr(importlib.import_module(model_path), 'Loss')()
+    util.fmodule.Optim = getattr(importlib.import_module('torch.optim'), option['optimizer'])
+    util.fmodule.Model = getattr(importlib.import_module(model_path), 'Model')
     task_path = os.path.join('fedtask', option['task'], 'task.json')
     try:
         with open(task_path, 'r') as taskfile:
@@ -97,7 +97,7 @@ def initialize(option):
     # init server
     print("init server...", end='')
     server_path = '%s.%s' % ('method', option['method'])
-    server = getattr(importlib.import_module(server_path), 'Server')(option, utils.fmodule.Model().to(utils.fmodule.device), clients, dtest = test_data)
+    server = getattr(importlib.import_module(server_path), 'Server')(option, util.fmodule.Model().to(util.fmodule.device), clients, dtest = test_data)
     print('done')
     return server
 

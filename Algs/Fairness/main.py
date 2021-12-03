@@ -1,4 +1,4 @@
-import utils.fflow as flw
+import util.fflow as flw
 import ujson
 
 def main():

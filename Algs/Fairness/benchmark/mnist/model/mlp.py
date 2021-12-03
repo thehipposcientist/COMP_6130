@@ -1,7 +1,7 @@
 
 from torch import nn
 import torch.nn.functional as F
-from utils.fmodule import FModule
+from util.fmodule import FModule
 
 
 class Model(FModule):
