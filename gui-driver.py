@@ -743,7 +743,7 @@ class MainView(Tk):
         self.canvas.create_text(800, 450, text="Certified Robustness", font=('Helvatica', 24), fill='Gray', tags = 'del')
         pass
 
-    def f_page_1(self):
+     def f_page_1(self):
 
         self.clean()
         
@@ -780,6 +780,13 @@ class MainView(Tk):
         def download_btn_pressed():
             self.pb = Progressbar(self.canvas, orient=HORIZONTAL, length=200, mode='indeterminate')
             self.canvas.create_window(800,625, window=self.pb, tags='download')
+            path = 'Algs/Fairness/fedtask/mnist_client100_dist0_beta0_noise0/record/'
+            files = os.listdir(path)
+
+            # remove any existing files from previous runs
+            for f in files:
+                os.remove(path+f)
+
             self.main_thread = threading.Thread(target=download_btn_threads)
             self.main_thread.start()
 
@@ -960,11 +967,16 @@ class MainView(Tk):
             files = os.listdir(path)
 
             for f in files:
-                results = pd.read_json(f, header=None)
+                with open(path+f) as json_data:
+                    data = json.load(json_data)
+
+            accuracy = data['valid_accs']    
+
+            print(accuracy)
 
             acc_plt = plt
-            acc_plt.plot(results[0], color='blue')
-            acc_plt.xlabel('Epochs')
+            acc_plt.plot(accuracy, color='green')
+            acc_plt.xlabel('Number of Rounds')
             acc_plt.ylabel('Accuracy (%)')
             acc_plt.savefig('temp.png')
 
@@ -972,7 +984,7 @@ class MainView(Tk):
             self.acc_plot_fig = ImageTk.PhotoImage(self.acc_plot_fig)
 
             self.canvas.create_image(500, 175, image=self.acc_plot_fig, anchor=NW, tags='page-3')
-            self.canvas.create_text(600, 675, text="Final Accuracy: " + str(df[0][int(self.epochs.get()) - 1]), 
+            self.canvas.create_text(600, 675, text="Final Accuracy: " + str(accuracy[len(accuracy-1)][int(self.epochs.get()) - 1]), 
                                     font=('Helvatica', 18), fill='Gray', tags='page-3')
         
             self.finish_btn = Button(self, text='Exit', command=finish_btn_tasks)
