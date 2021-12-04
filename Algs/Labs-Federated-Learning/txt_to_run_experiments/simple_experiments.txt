@@ -1,0 +1,3 @@
+--algo FedAvg --dataset MNIST-iid --epochs 5 --type FL 
+--algo FedAvg --dataset MNIST-iid --epochs 5 --type plain --n_freeriders 1
+--algo FedAvg --dataset MNIST-iid --epochs 5 --type disguised --coef 1 --power 1 --n_freeriders 1
