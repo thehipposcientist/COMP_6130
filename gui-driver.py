@@ -966,6 +966,13 @@ class MainView(Tk):
         def download_btn_pressed():
             self.pb = Progressbar(self.canvas, orient=HORIZONTAL, length=200, mode='indeterminate')
             self.canvas.create_window(800,625, window=self.pb, tags='download')
+            path = 'Algs/Fairness/fedtask/mnist_client100_dist0_beta0_noise0/record/'
+            files = os.listdir(path)
+
+            # remove any existing files from previous runs
+            for f in files:
+                os.remove(path+f)
+
             self.main_thread = threading.Thread(target=download_btn_threads)
             self.main_thread.start()
 
@@ -981,8 +988,13 @@ class MainView(Tk):
             elif self.method_clicked == 'FedProx':
                 self.method = 'fedprox'
             elif self.method_clicked == 'FedFV':
-                self.method = 'fedfv'
+                self.method = 'fedfv'     
 
+            if self.opt_clicked =='Adam':
+                self.optimizer ='Adam'
+            else:
+                self.optimizer = 'SGD'
+            
             # run algorithm with args
             # python main.py --task mnist_client100_dist0_beta0_noise0 --model cnn --method fedavg --num_rounds 20 --num_epochs 5 --learning_rate 0.215 --proportion 0.1 --batch_size 10 --train_rate 1 --eval_interval 1
             p = [
@@ -1008,9 +1020,15 @@ class MainView(Tk):
                 self.train_rate.get(),
                 "--eval_interval",
                 self.eval_interval.get(),
+                "--optimizer",
+                self.optimizer,
+                #"--gpu",
+                #self.CPU.get(),
                 ]
 
+            self.tic = time.perf_counter()
             subprocess.call(p)
+            self.toc = time.perf_counter()
             time.sleep(1)
 
         def run_btn_actions():
@@ -1052,12 +1070,13 @@ class MainView(Tk):
                                 'FedProx',
                                 'FedFV']
             self.bool_dropdown = ['True', 'False']
+            self.opt_dropdown = ['SGD', 'Adam']
 
             # Variables
             self.method_clicked = StringVar(self.canvas, value='FedAvg')
-            self.training_clicked = StringVar(self.canvas, value='1')
-            self.cuda_clicked = StringVar(self.canvas, value='True')
             self.save_clicked = StringVar(self.canvas, value='False')
+            self.opt_clicked = StringVar(self.canvas, value='SGD')
+            #self.CPU_clicked = StringVar(self.canvas, value='False')
 
             # python main.py --task mnist_client100_dist0_beta0_noise0 --model cnn --method fedavg --num_rounds 20 --num_epochs 5 --learning_rate 0.215 --proportion 0.1 --batch_size 10 --train_rate 1 --eval_interval 1
             # Method dropdown
@@ -1123,6 +1142,13 @@ class MainView(Tk):
             self.canvas.create_window(825, 350, anchor=NW, window=self.save_label, tags='page-2')
             self.canvas.create_window(975, 350, anchor=NW, window=self.save_field, tags='page-2')
 
+            # optimizer
+            self.optimizer = OptionMenu(self.canvas, self.opt_clicked, *self.opt_dropdown)
+            self.optimizer.config(bg = "#E2E3DB")
+            self.optimizer_label = Label(self.canvas, text='Optimizer', bg="#E2E3DB")
+            self.canvas.create_window(825, 400, anchor=NW, window=self.optimizer_label, tags='page-2')
+            self.canvas.create_window(975, 400, anchor=NW, window=self.optimizer, tags='page-2')
+
             self.run_btn = Button(self, text='Run', command=run_btn_pressed)
             self.canvas.create_window(800, 650, window=self.run_btn, tags='run_btn')
 
@@ -1146,11 +1172,16 @@ class MainView(Tk):
             files = os.listdir(path)
 
             for f in files:
-                results = pd.read_json(f, header=None)
+                with open(path+f) as json_data:
+                    data = json.load(json_data)
+
+            accuracy = data['valid_accs']    
+
+            print(accuracy)
 
             acc_plt = plt
-            acc_plt.plot(results[0], color='blue')
-            acc_plt.xlabel('Epochs')
+            acc_plt.plot(accuracy, color='green')
+            acc_plt.xlabel('Number of Rounds')
             acc_plt.ylabel('Accuracy (%)')
             acc_plt.savefig('temp.png')
 
@@ -1158,9 +1189,12 @@ class MainView(Tk):
             self.acc_plot_fig = ImageTk.PhotoImage(self.acc_plot_fig)
 
             self.canvas.create_image(500, 175, image=self.acc_plot_fig, anchor=NW, tags='page-3')
-            self.canvas.create_text(600, 675, text="Final Accuracy: " + str(df[0][int(self.epochs.get()) - 1]),
-                                    font=('Helvatica', 18), fill='Gray', tags='page-3')
 
+            self.canvas.create_text(600, 675, text="Final Accuracy: " + str(accuracy[int(self.num_rounds.get()) - 1]), 
+                                    font=('Helvatica', 18), fill='Gray', tags='page-3')
+            self.canvas.create_text(600, 715, text="Elapsed time: " + str(self.toc - self.tic), 
+                                    font=('Helvatica', 18), fill='Gray', tags='page-3')                        
+        
             self.finish_btn = Button(self, text='Exit', command=finish_btn_tasks)
             self.canvas.create_window(1100, 675, window=self.finish_btn, tags = 'page-3')
             self.s_f_btn = Button(self, text='Save end Exit', command=s_f_btn_tasks)
