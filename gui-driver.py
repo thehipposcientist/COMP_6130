@@ -752,8 +752,6 @@ class MainView(Tk):
             os.chdir("Algs/Fairness/")
             p = ["python", "generate_fedtask.py"]
             subprocess.call(p)
-            #p = ["python", "main.py"]
-            #subprocess.call(p)
             time.sleep(1)
             
         def donwload_btn_actions():
@@ -796,6 +794,7 @@ class MainView(Tk):
             os.chdir("Algs/Fairness")
 
             self.method = 'fedavg'
+            self.model = 'mlp'
 
             if self.method_clicked == 'FedAvg':
                 self.method = 'fedavg'
@@ -808,6 +807,14 @@ class MainView(Tk):
                 self.optimizer ='Adam'
             else:
                 self.optimizer = 'SGD'
+
+            if self.model_clicked == 'mlp':
+                self.model = 'mlp'
+            elif self.model_clicked == 'cnn':
+                self.model = 'cnn'
+            elif self.model_clicked == 'resnet18':
+                self.model = 'resnet18'  
+
             
             # run algorithm with args
             # python main.py --task mnist_client100_dist0_beta0_noise0 --model cnn --method fedavg --num_rounds 20 --num_epochs 5 --learning_rate 0.215 --proportion 0.1 --batch_size 10 --train_rate 1 --eval_interval 1
@@ -838,6 +845,8 @@ class MainView(Tk):
                 self.optimizer,
                 #"--gpu",
                 #self.CPU.get(),
+                "--model",
+                self.model,
                 ]
 
             self.tic = time.perf_counter()
@@ -880,9 +889,8 @@ class MainView(Tk):
             self.canvas.create_text(800, 150, text='Set parameters', font=('Helvatica', 20), fill='Gray', tags='page-2')
 
             # options
-            self.method_options = ['FedAvg', 
-                                'FedProx', 
-                                'FedFV']
+            self.method_options = ['FedAvg', 'FedProx', 'FedFV']
+            self.model_options = ['mlp', 'cnn', 'resnet18']
             self.bool_dropdown = ['True', 'False']
             self.opt_dropdown = ['SGD', 'Adam']
 
@@ -891,8 +899,16 @@ class MainView(Tk):
             self.save_clicked = StringVar(self.canvas, value='False')
             self.opt_clicked = StringVar(self.canvas, value='SGD')
             #self.CPU_clicked = StringVar(self.canvas, value='False')
+            self.model_clicked = StringVar(self.canvas, value='mlp')
 
             # python main.py --task mnist_client100_dist0_beta0_noise0 --model cnn --method fedavg --num_rounds 20 --num_epochs 5 --learning_rate 0.215 --proportion 0.1 --batch_size 10 --train_rate 1 --eval_interval 1
+            # Model dropdown
+            self.model_drop = OptionMenu(self.canvas, self.model_clicked, *self.model_options)
+            self.model_drop.config(bg = "#E2E3DB")
+            self.model_label = Label(self.canvas, text='Model', bg="#E2E3DB")
+            self.canvas.create_window(825, 250, anchor=NW, window=self.model_label, tags='page-2')
+            self.canvas.create_window(975, 250, anchor=NW, window=self.model_drop, tags='page-2')
+
             # Method dropdown
             self.method_drop = OptionMenu(self.canvas, self.method_clicked, *self.method_options)
             self.method_drop.config(bg = "#E2E3DB")
