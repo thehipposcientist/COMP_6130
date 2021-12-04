@@ -8,6 +8,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from PIL import ImageTk, Image
+import ujson
 import h5py
 import json
 import ast
@@ -435,7 +436,7 @@ class MainView(Tk):
             p = ["python", "generate_default_models.py"]
             subprocess.call(p)
             time.sleep(1)
-
+            
         def donwload_btn_actions():
             self.canvas.delete('loading_data')
             self.canvas.delete('download_btn')
@@ -451,6 +452,7 @@ class MainView(Tk):
             download_btn_act.join()
             self.pb.stop()
             self.canvas.delete('download')
+
             self.canvas.create_text(800, 300,
                 text='Finished downloading',
                 font=('Helvatica', 20), fill='Gray', tags='page-1')
@@ -558,6 +560,7 @@ class MainView(Tk):
 
             # options
             self.dataset_options = ['Fashion-MNIST', 'CIFAR-10']
+            
             self.alg_options = ['Label Flipping Attack',
                                 'Attack Timing',
                                 'Malicious Participant Availibility']
@@ -699,6 +702,7 @@ class MainView(Tk):
             self.acc_plot_fig = ImageTk.PhotoImage(self.acc_plot_fig)
 
             self.canvas.create_image(500, 175, image=self.acc_plot_fig, anchor=NW, tags='page-3')
+
             self.canvas.create_text(600, 675, text="Final Accuracy: " + str(df[0][int(self.epochs.get()) - 1]),
                                     font=('Helvatica', 18), fill='Gray', tags='page-3')
 
@@ -957,6 +961,7 @@ class MainView(Tk):
             download_btn_act.join()
             self.pb.stop()
             self.canvas.delete('download')
+
             self.canvas.create_text(800, 300,
                 text='Finished downloading',
                 font=('Helvatica', 20), fill='Gray', tags='page-1')
@@ -1156,7 +1161,7 @@ class MainView(Tk):
             p = ["rm", "-rf", "temp.png"]
             subprocess.call(p)
             self.exit_command()
-
+            
         def s_f_btn_tasks():
             p = ["mv", "temp.png", "Algs/Fairness/saved_plots/acc_plot_"+self.method[:-3]+".png"]
             subprocess.call(p)
@@ -1190,10 +1195,13 @@ class MainView(Tk):
 
             self.canvas.create_image(500, 175, image=self.acc_plot_fig, anchor=NW, tags='page-3')
 
+            self.canvas.create_text(600, 675, text="Final Accuracy: " + str(df[0][int(self.epochs.get()) - 1]), 
+                                    font=('Helvatica', 18), fill='Gray', tags='page-3')
+
             self.canvas.create_text(600, 675, text="Final Accuracy: " + str(accuracy[int(self.num_rounds.get()) - 1]), 
                                     font=('Helvatica', 18), fill='Gray', tags='page-3')
             self.canvas.create_text(600, 715, text="Elapsed time: " + str(self.toc - self.tic), 
-                                    font=('Helvatica', 18), fill='Gray', tags='page-3')                        
+                                    font=('Helvatica', 18), fill='Gray', tags='page-3')
         
             self.finish_btn = Button(self, text='Exit', command=finish_btn_tasks)
             self.canvas.create_window(1100, 675, window=self.finish_btn, tags = 'page-3')

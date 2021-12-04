@@ -2,6 +2,7 @@ from torch import nn
 import torch.nn.functional as F
 from util.fmodule import FModule
 
+
 class Model(FModule):
     def __init__(self):
         super().__init__()
