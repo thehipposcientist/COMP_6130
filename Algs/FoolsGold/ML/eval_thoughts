@@ -1,0 +1,165 @@
+mnist 1000 5_1_7
+
+No feature importance
+Done iterations!
+('Train error: %d', '0.08555')
+('Test error: %d', '0.0845')
+Accuracy overall: 0.91445
+Accuracy on other digits: 0.907976266476398
+Target Training Accuracy on source label 1s: 0.9655888460397508
+Target Training Accuracy on target label 7s: 0.9273743016759777
+Target Attack Rate (1 to 7): 0.0026698309107089885
+
+
+2 sybils rand noise - top k
+Accuracy overall: 0.8280833333333333
+Accuracy on other digits: 0.8506515453077472
+Target Training Accuracy on source label 1s: 0.649807178878671
+Target Training Accuracy on target label 7s: 0.8416600159616919
+Target Attack Rate (1 to 7): 0.2975378226045684
+
+
+
+
+########### Poisoning tug of war ###############
+3000 iterations
+
+honest: 1 vs Bad 1_1_7
+('Train error: %d', '0.1369')
+('Test error: %d', '0.1333')
+Accuracy overall: 0.8631
+Accuracy on other digits: 0.892354200307935
+Target Training Accuracy on source label 1s: 0.6320083061406111
+Target Training Accuracy on target label 7s: 0.8976855546687948
+Target Attack Rate (1 to 7): 0.33595372293088105
+
+honest: 1 vs Bad 2_1_7
+('Train error: %d', '0.21125')
+('Test error: %d', '0.2068')
+Accuracy overall: 0.78875
+Accuracy on other digits: 0.8872845394119193
+Target Training Accuracy on source label 1s: 0.010382675763868289
+Target Training Accuracy on target label 7s: 0.8909816440542697
+Target Attack Rate (1 to 7): 0.9617324236131711
+
+honest: 1 vs Bad 3_1_7
+('Train error: %d', '0.21591666666666667')
+('Test error: %d', '0.2112')
+Accuracy overall: 0.7840833333333334
+Accuracy on other digits: 0.8831724811295956
+Target Training Accuracy on source label 1s: 0.0013349154553544942
+Target Training Accuracy on target label 7s: 0.888587390263368
+Target Attack Rate (1 to 7): 0.9755265499851676
+
+honest: 2 vs Bad 1_1_7
+('Train error: %d', '0.1')
+('Test error: %d', '0.0952')
+Accuracy overall: 0.9
+Accuracy on other digits: 0.8963723759810732
+Target Training Accuracy on source label 1s: 0.9286561851082765
+Target Training Accuracy on target label 7s: 0.9021548284118116
+Target Attack Rate (1 to 7): 0.03619104123405518
+
+honest: 2 vs Bad 2_1_7
+('Train error: %d', '0.13895')
+('Test error: %d', '0.1357')
+Accuracy overall: 0.86105
+Accuracy on other digits: 0.8936310037928574
+Target Training Accuracy on source label 1s: 0.603678433699199
+Target Training Accuracy on target label 7s: 0.8991221069433359
+Target Attack Rate (1 to 7): 0.3620587362800356
+
+honest: 2 vs Bad 3_1_7
+('Train error: %d', '0.20181666666666667')
+('Test error: %d', '0.1966')
+Accuracy overall: 0.7981833333333334
+Accuracy on other digits: 0.8900071350782981
+Target Training Accuracy on source label 1s: 0.07282705428656185
+Target Training Accuracy on target label 7s: 0.8936951316839585
+Target Attack Rate (1 to 7): 0.8958765944823495
+
+honest: 3 vs Bad 1_1_7
+('Train error: %d', '0.09673333333333334')
+('Test error: %d', '0.0924')
+Accuracy overall: 0.9032666666666667
+Accuracy on other digits: 0.8977806151188554
+Target Training Accuracy on source label 1s: 0.9466033817858203
+Target Training Accuracy on target label 7s: 0.9077414205905826
+Target Attack Rate (1 to 7): 0.01928211213289825
+
+honest: 3 vs Bad 2_1_7
+('Train error: %d', '0.10473333333333333')
+('Test error: %d', '0.0996')
+Accuracy overall: 0.8952666666666667
+Accuracy on other digits: 0.895320890758196
+Target Training Accuracy on source label 1s: 0.8948383269059627
+Target Training Accuracy on target label 7s: 0.9042298483639266
+Target Attack Rate (1 to 7): 0.07089884307327203
+
+honest: 3 vs Bad 3_1_7
+('Train error: %d', '0.13823333333333335')
+('Test error: %d', '0.1343')
+Accuracy overall: 0.8617666666666667
+Accuracy on other digits: 0.8930864846595816
+Target Training Accuracy on source label 1s: 0.614357757342035
+Target Training Accuracy on target label 7s: 0.8994413407821229
+Target Attack Rate (1 to 7): 0.3525660041530703
+
+
+############ Noisy Poisoning ############
+10*noisevec
+('Train error: %d', '0.21043333333333333')
+('Test error: %d', '0.2061')
+Accuracy overall: 0.7895666666666666
+Accuracy on other digits: 0.8881670359382628
+Target Training Accuracy on source label 1s: 0.010679323642835954
+Target Training Accuracy on target label 7s: 0.8905027932960894
+Target Attack Rate (1 to 7): 0.9606941560367843
+
+softdefense
+('Train error: %d', '0.2121')
+('Test error: %d', '0.2097')
+Accuracy overall: 0.7879
+Accuracy on other digits: 0.8876412933268242
+Target Training Accuracy on source label 1s: 0.0
+Target Training Accuracy on target label 7s: 0.9393455706304868
+Target Attack Rate (1 to 7): 0.9817561554434886
+
+
+
+########### Adative ##########
+
+16_1_7 no importance
+0.2: 0.842
+0.3: 0.88
+0.4: 0.89966
+
+8_1_7
+0.2:  0.724333333333
+0.3:  0.795
+0.4: 0.822333333333 0.831333333333 0.829333333333
+
+2_1_7
+0.2: 0.3693
+0.3: 0.427
+0.4: 0.449
+
+
+importance
+
+8_1_7
+0.2: 0.727 0.738666666667
+0.3: 0.7096 
+D? 0.4: 0.451 0.446 0.650333333333 0.455
+
+
+importance prop 0.1
+
+8_1_7
+0.2: 0.556333333333 0.583333333333 0.323333333333!
+d 0.3: 0.392666666667 0.398
+0.4: 0.451333333333
+
+
+importance prop 0.05
+0.2: 0.328666666667
