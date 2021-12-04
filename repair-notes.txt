@@ -5,3 +5,8 @@ Robustness
     Data Poisoning
         python generate_data_distribution.py
         python generate_default_models.py
+
+    Free-rider Attacks
+	python python_code/simple_plot.py -- hard coded paths
+	python data/MNIST/mnist_iid.py -- hard coded iterations, clients, and samples
+	python free-riding.py -- hard coded paths
