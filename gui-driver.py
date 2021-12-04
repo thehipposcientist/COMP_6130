@@ -802,7 +802,12 @@ class MainView(Tk):
             elif self.method_clicked == 'FedProx':
                 self.method = 'fedprox'
             elif self.method_clicked == 'FedFV':
-                self.method = 'fedfv'        
+                self.method = 'fedfv'     
+
+            if self.opt_clicked =='Adam':
+                self.optimizer ='Adam'
+            else:
+                self.optimizer = 'SGD'
             
             # run algorithm with args
             # python main.py --task mnist_client100_dist0_beta0_noise0 --model cnn --method fedavg --num_rounds 20 --num_epochs 5 --learning_rate 0.215 --proportion 0.1 --batch_size 10 --train_rate 1 --eval_interval 1
@@ -829,6 +834,10 @@ class MainView(Tk):
                 self.train_rate.get(),
                 "--eval_interval",
                 self.eval_interval.get(),
+                "--optimizer",
+                self.optimizer,
+                #"--gpu",
+                #self.CPU.get(),
                 ]
 
             self.tic = time.perf_counter()
@@ -875,12 +884,13 @@ class MainView(Tk):
                                 'FedProx', 
                                 'FedFV']
             self.bool_dropdown = ['True', 'False']
+            self.opt_dropdown = ['SGD', 'Adam']
 
             # Variables
             self.method_clicked = StringVar(self.canvas, value='FedAvg')
-            self.training_clicked = StringVar(self.canvas, value='1')
-            self.cuda_clicked = StringVar(self.canvas, value='True')
             self.save_clicked = StringVar(self.canvas, value='False')
+            self.opt_clicked = StringVar(self.canvas, value='SGD')
+            #self.CPU_clicked = StringVar(self.canvas, value='False')
 
             # python main.py --task mnist_client100_dist0_beta0_noise0 --model cnn --method fedavg --num_rounds 20 --num_epochs 5 --learning_rate 0.215 --proportion 0.1 --batch_size 10 --train_rate 1 --eval_interval 1
             # Method dropdown
@@ -945,6 +955,13 @@ class MainView(Tk):
             self.save_label = Label(self.canvas, text='Save model', bg="#E2E3DB")
             self.canvas.create_window(825, 350, anchor=NW, window=self.save_label, tags='page-2')
             self.canvas.create_window(975, 350, anchor=NW, window=self.save_field, tags='page-2')
+
+            # optimizer
+            self.optimizer = OptionMenu(self.canvas, self.opt_clicked, *self.opt_dropdown)
+            self.optimizer.config(bg = "#E2E3DB")
+            self.optimizer_label = Label(self.canvas, text='Optimizer', bg="#E2E3DB")
+            self.canvas.create_window(825, 400, anchor=NW, window=self.optimizer_label, tags='page-2')
+            self.canvas.create_window(975, 400, anchor=NW, window=self.optimizer, tags='page-2')
 
             self.run_btn = Button(self, text='Run', command=run_btn_pressed)
             self.canvas.create_window(800, 650, window=self.run_btn, tags='run_btn')
