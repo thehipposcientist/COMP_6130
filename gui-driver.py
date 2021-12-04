@@ -1080,14 +1080,8 @@ class MainView(Tk):
             self.canvas.create_text(800, 150, text='Set parameters', font=('Helvatica', 20), fill='Gray', tags='page-2')
 
             # options
-<<<<<<< HEAD
             self.method_options = ['FedAvg', 'FedProx', 'FedFV']
             self.model_options = ['mlp', 'cnn', 'resnet18']
-=======
-            self.method_options = ['FedAvg',
-                                'FedProx',
-                                'FedFV']
->>>>>>> 2c2af2f355ce799a22fa0053338b5e3986683cda
             self.bool_dropdown = ['True', 'False']
             self.opt_dropdown = ['SGD', 'Adam']
 
