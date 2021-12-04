@@ -1211,9 +1211,6 @@ class MainView(Tk):
 
             self.canvas.create_image(500, 175, image=self.acc_plot_fig, anchor=NW, tags='page-3')
 
-            self.canvas.create_text(600, 675, text="Final Accuracy: " + str(df[0][int(self.epochs.get()) - 1]), 
-                                    font=('Helvatica', 18), fill='Gray', tags='page-3')
-
             self.canvas.create_text(600, 675, text="Final Accuracy: " + str(accuracy[int(self.num_rounds.get()) - 1]), 
                                     font=('Helvatica', 18), fill='Gray', tags='page-3')
             self.canvas.create_text(600, 715, text="Elapsed time: " + str(self.toc - self.tic), 
