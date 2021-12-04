@@ -8,8 +8,10 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from PIL import ImageTk, Image
+import ujson
 import h5py
 import json
+import ast
 
 class MainView(Tk):
     def __init__(self):
@@ -434,7 +436,7 @@ class MainView(Tk):
             p = ["python", "generate_default_models.py"]
             subprocess.call(p)
             time.sleep(1)
-
+            
         def donwload_btn_actions():
             self.canvas.delete('loading_data')
             self.canvas.delete('download_btn')
@@ -450,6 +452,7 @@ class MainView(Tk):
             download_btn_act.join()
             self.pb.stop()
             self.canvas.delete('download')
+
             self.canvas.create_text(800, 300,
                 text='Finished downloading',
                 font=('Helvatica', 20), fill='Gray', tags='page-1')
@@ -557,6 +560,7 @@ class MainView(Tk):
 
             # options
             self.dataset_options = ['Fashion-MNIST', 'CIFAR-10']
+            
             self.alg_options = ['Label Flipping Attack',
                                 'Attack Timing',
                                 'Malicious Participant Availibility']
@@ -698,6 +702,7 @@ class MainView(Tk):
             self.acc_plot_fig = ImageTk.PhotoImage(self.acc_plot_fig)
 
             self.canvas.create_image(500, 175, image=self.acc_plot_fig, anchor=NW, tags='page-3')
+
             self.canvas.create_text(600, 675, text="Final Accuracy: " + str(df[0][int(self.epochs.get()) - 1]),
                                     font=('Helvatica', 18), fill='Gray', tags='page-3')
 
@@ -809,7 +814,118 @@ class MainView(Tk):
 
     def r_page_8(self):
         self.clean()
-        self.canvas.create_text(800, 450, text="Sybil Robustness", font=('Helvatica', 24), fill='Gray', tags = 'del')
+        self.canvas.create_text(800, 100, text="Sybil Robustness", font=('Helvatica', 24), fill='Gray', tags = 'del')
+
+        self.pb = Progressbar(self.canvas, orient=HORIZONTAL, length=100, mode='determinate')
+        self.canvas.create_window(700,700,window=self.pb,tags='page-1')
+
+        def thread_init():
+            self.start_thread = threading.Thread(target=start_progress)
+            self.start_thread.start()
+
+        def start_progress():
+            self.pb.start()
+            self.next_thread = threading.Thread(target=callback)
+            self.next_thread.start()
+            self.next_thread.join()
+            self.pb.stop()
+
+        def callback():
+            home = os.getcwd()
+            os.chdir("Algs/FoolsGold/ML")
+
+            p = ["python",
+                "code/ML_main.py",
+                "mnist",
+                "1000",
+                "5_1_7"]
+
+            run_exp = subprocess.Popen(p, stdout=subprocess.PIPE)
+
+            self.output = []
+            for line in iter(run_exp.stdout.readline, b''):
+                self.output += [line]
+
+            while run_exp.poll() is None:
+                pass
+
+            self.submit_btn.destroy()
+            self.next_btn = Button(self, text='Next', command=results_page)
+            self.canvas.create_window(700, 600, window=self.next_btn,tags='page-1')
+
+        def finish_btn_tasks():
+            p = ['rm', 'foolsgold_results.txt']
+            subprocess.run(p)
+            self.exit_command()
+
+        def s_f_btn_tasks():
+            self.exit_command()
+            pass
+
+        def page_1():
+            # TODO add other options to run
+            self.dataset_options = ['mnist']
+
+            # variables
+            self.dataset_clicked = StringVar(self.canvas, value='mnist')
+
+            # dataset dropdown
+            self.dataset_drop = OptionMenu(self.canvas, self.dataset_clicked, *self.dataset_options)
+            self.dataset_drop.config(bg = "#E2E3DB")
+            self.dataset_label = Label(self.canvas, text='Dataset', bg="#E2E3DB")
+            self.canvas.create_window(400, 200, window=self.dataset_label,tags='page-1')
+            self.canvas.create_window(600, 200, window=self.dataset_drop,tags='page-1')
+            # iterations field
+            self.itr_field = Entry(self.canvas)
+            self.itr_field.insert(END, '1000')
+            self.itr_label = Label(self.canvas, text='Iterations', bg="#E2E3DB")
+            self.canvas.create_window(800, 200, window=self.itr_label,tags='page-1')
+            self.canvas.create_window(950, 200, window=self.itr_field,tags='page-1')
+
+            # submit button
+            self.submit_btn = Button(self.canvas, text="Submit", width=10, command=thread_init)
+            self.canvas.create_window(700, 600, window=self.submit_btn,tags='page-1')
+
+        def results_page():
+            self.canvas.delete('page-1')
+            self.canvas.create_text(800, 150, text='Results', font=('Helvatica', 18), fill='Gray', tags='page-2')
+
+            if "foolsgold_results.txt" in os.listdir():
+                p = ['rm', 'foolsgold_results.txt']
+                subprocess.run(p)
+
+            offset_y = 220
+            res_y = 220
+            self.canvas.create_text(400, 200, text="Clients setup as: ", font=('Helvatica', 18), fill='Gray', tags='page-2')
+
+            for x in self.output:
+                x = x.decode("utf-8")
+                with open("foolsgold_results.txt", "a") as f:
+                    f.write("{}\n".format(x))
+                if x.startswith("Clients setup"):
+                    y = x.strip("Clients setup as")
+                    y = ast.literal_eval(y)
+                    for client in y:
+                        self.canvas.create_text(500, offset_y, text="{}".format(client.strip()), font=('Helvatica', 14), fill='Gray', tags='page-2')
+                        offset_y += 25
+                else:
+                    if x.startswith("Train") or x.startswith("Test") or x.startswith("Accuracy") or x.startswith("Accuracy") or x.startswith("Target"):
+                        res = x.strip().split(":")
+                        key = res[0]
+                        val = res[1]
+                        self.res_key = Label(self.canvas, text=key + ":", bg="#E2E3DB", width=40, anchor="e")
+                        self.canvas.create_window(800, res_y, window=self.res_key,tags='res-page')
+                        self.res_val = Label(self.canvas, text=val, bg="#E2E3DB", width=20)
+                        self.canvas.create_window(1100, res_y, window=self.res_val,tags='res-page')
+                        res_y += 25
+            f.close()
+            self.finish_btn = Button(self, text='Exit', command=finish_btn_tasks)
+            self.canvas.create_window(1100, 675, window=self.finish_btn, tags = 'res-page')
+            self.s_f_btn = Button(self, text='Save end Exit', command=s_f_btn_tasks)
+            self.canvas.create_window(1000, 675, window=self.s_f_btn, tags='res-page')
+
+        page_1()
+
         pass
 
     def r_page_9(self):
@@ -826,8 +942,6 @@ class MainView(Tk):
             os.chdir("Algs/Fairness/")
             p = ["python", "generate_fedtask.py"]
             subprocess.call(p)
-            #p = ["python", "main.py"]
-            #subprocess.call(p)
             time.sleep(1)
 
         def donwload_btn_actions():
@@ -845,6 +959,7 @@ class MainView(Tk):
             download_btn_act.join()
             self.pb.stop()
             self.canvas.delete('download')
+
             self.canvas.create_text(800, 300,
                 text='Finished downloading',
                 font=('Helvatica', 20), fill='Gray', tags='page-1')
@@ -854,6 +969,13 @@ class MainView(Tk):
         def download_btn_pressed():
             self.pb = Progressbar(self.canvas, orient=HORIZONTAL, length=200, mode='indeterminate')
             self.canvas.create_window(800,625, window=self.pb, tags='download')
+            path = 'Algs/Fairness/fedtask/mnist_client100_dist0_beta0_noise0/record/'
+            files = os.listdir(path)
+
+            # remove any existing files from previous runs
+            for f in files:
+                os.remove(path+f)
+
             self.main_thread = threading.Thread(target=download_btn_threads)
             self.main_thread.start()
 
@@ -863,14 +985,28 @@ class MainView(Tk):
             os.chdir("Algs/Fairness")
 
             self.method = 'fedavg'
+            self.model = 'mlp'
 
             if self.method_clicked == 'FedAvg':
                 self.method = 'fedavg'
             elif self.method_clicked == 'FedProx':
                 self.method = 'fedprox'
             elif self.method_clicked == 'FedFV':
-                self.method = 'fedfv'
+                self.method = 'fedfv'     
 
+            if self.opt_clicked =='Adam':
+                self.optimizer ='Adam'
+            else:
+                self.optimizer = 'SGD'
+
+            if self.model_clicked == 'mlp':
+                self.model = 'mlp'
+            elif self.model_clicked == 'cnn':
+                self.model = 'cnn'
+            elif self.model_clicked == 'resnet18':
+                self.model = 'resnet18'  
+
+            
             # run algorithm with args
             # python main.py --task mnist_client100_dist0_beta0_noise0 --model cnn --method fedavg --num_rounds 20 --num_epochs 5 --learning_rate 0.215 --proportion 0.1 --batch_size 10 --train_rate 1 --eval_interval 1
             p = [
@@ -896,9 +1032,17 @@ class MainView(Tk):
                 self.train_rate.get(),
                 "--eval_interval",
                 self.eval_interval.get(),
+                "--optimizer",
+                self.optimizer,
+                #"--gpu",
+                #self.CPU.get(),
+                "--model",
+                self.model,
                 ]
 
+            self.tic = time.perf_counter()
             subprocess.call(p)
+            self.toc = time.perf_counter()
             time.sleep(1)
 
         def run_btn_actions():
@@ -936,18 +1080,26 @@ class MainView(Tk):
             self.canvas.create_text(800, 150, text='Set parameters', font=('Helvatica', 20), fill='Gray', tags='page-2')
 
             # options
-            self.method_options = ['FedAvg',
-                                'FedProx',
-                                'FedFV']
+            self.method_options = ['FedAvg', 'FedProx', 'FedFV']
+            self.model_options = ['mlp', 'cnn', 'resnet18']
             self.bool_dropdown = ['True', 'False']
+            self.opt_dropdown = ['SGD', 'Adam']
 
             # Variables
             self.method_clicked = StringVar(self.canvas, value='FedAvg')
-            self.training_clicked = StringVar(self.canvas, value='1')
-            self.cuda_clicked = StringVar(self.canvas, value='True')
             self.save_clicked = StringVar(self.canvas, value='False')
+            self.opt_clicked = StringVar(self.canvas, value='SGD')
+            #self.CPU_clicked = StringVar(self.canvas, value='False')
+            self.model_clicked = StringVar(self.canvas, value='mlp')
 
             # python main.py --task mnist_client100_dist0_beta0_noise0 --model cnn --method fedavg --num_rounds 20 --num_epochs 5 --learning_rate 0.215 --proportion 0.1 --batch_size 10 --train_rate 1 --eval_interval 1
+            # Model dropdown
+            self.model_drop = OptionMenu(self.canvas, self.model_clicked, *self.model_options)
+            self.model_drop.config(bg = "#E2E3DB")
+            self.model_label = Label(self.canvas, text='Model', bg="#E2E3DB")
+            self.canvas.create_window(825, 250, anchor=NW, window=self.model_label, tags='page-2')
+            self.canvas.create_window(975, 250, anchor=NW, window=self.model_drop, tags='page-2')
+
             # Method dropdown
             self.method_drop = OptionMenu(self.canvas, self.method_clicked, *self.method_options)
             self.method_drop.config(bg = "#E2E3DB")
@@ -1011,6 +1163,13 @@ class MainView(Tk):
             self.canvas.create_window(825, 350, anchor=NW, window=self.save_label, tags='page-2')
             self.canvas.create_window(975, 350, anchor=NW, window=self.save_field, tags='page-2')
 
+            # optimizer
+            self.optimizer = OptionMenu(self.canvas, self.opt_clicked, *self.opt_dropdown)
+            self.optimizer.config(bg = "#E2E3DB")
+            self.optimizer_label = Label(self.canvas, text='Optimizer', bg="#E2E3DB")
+            self.canvas.create_window(825, 400, anchor=NW, window=self.optimizer_label, tags='page-2')
+            self.canvas.create_window(975, 400, anchor=NW, window=self.optimizer, tags='page-2')
+
             self.run_btn = Button(self, text='Run', command=run_btn_pressed)
             self.canvas.create_window(800, 650, window=self.run_btn, tags='run_btn')
 
@@ -1018,7 +1177,7 @@ class MainView(Tk):
             p = ["rm", "-rf", "temp.png"]
             subprocess.call(p)
             self.exit_command()
-
+            
         def s_f_btn_tasks():
             p = ["mv", "temp.png", "Algs/Fairness/saved_plots/acc_plot_"+self.method[:-3]+".png"]
             subprocess.call(p)
@@ -1034,11 +1193,16 @@ class MainView(Tk):
             files = os.listdir(path)
 
             for f in files:
-                results = pd.read_json(f, header=None)
+                with open(path+f) as json_data:
+                    data = json.load(json_data)
+
+            accuracy = data['valid_accs']    
+
+            print(accuracy)
 
             acc_plt = plt
-            acc_plt.plot(results[0], color='blue')
-            acc_plt.xlabel('Epochs')
+            acc_plt.plot(accuracy, color='green')
+            acc_plt.xlabel('Number of Rounds')
             acc_plt.ylabel('Accuracy (%)')
             acc_plt.savefig('temp.png')
 
@@ -1046,9 +1210,12 @@ class MainView(Tk):
             self.acc_plot_fig = ImageTk.PhotoImage(self.acc_plot_fig)
 
             self.canvas.create_image(500, 175, image=self.acc_plot_fig, anchor=NW, tags='page-3')
-            self.canvas.create_text(600, 675, text="Final Accuracy: " + str(df[0][int(self.epochs.get()) - 1]),
-                                    font=('Helvatica', 18), fill='Gray', tags='page-3')
 
+            self.canvas.create_text(600, 675, text="Final Accuracy: " + str(accuracy[int(self.num_rounds.get()) - 1]), 
+                                    font=('Helvatica', 18), fill='Gray', tags='page-3')
+            self.canvas.create_text(600, 715, text="Elapsed time: " + str(self.toc - self.tic), 
+                                    font=('Helvatica', 18), fill='Gray', tags='page-3')
+        
             self.finish_btn = Button(self, text='Exit', command=finish_btn_tasks)
             self.canvas.create_window(1100, 675, window=self.finish_btn, tags = 'page-3')
             self.s_f_btn = Button(self, text='Save end Exit', command=s_f_btn_tasks)
