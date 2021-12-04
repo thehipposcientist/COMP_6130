@@ -1,8 +1,8 @@
 from .fedbase import BaseServer, BaseClient
-from torch.utils.data import DataLoader
-from utils.fmodule import device, lossfunc, Optim
+from torch.util.data import DataLoader
+from util.fmodule import device, lossfunc, Optim
 import copy
-from utils import fmodule
+from util import fmodule
 import torch
 
 class Server(BaseServer):

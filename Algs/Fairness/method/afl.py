@@ -1,4 +1,4 @@
-from utils import fmodule
+from util import fmodule
 from .fedbase import BaseServer, BaseClient
 import numpy as np
 import copy
