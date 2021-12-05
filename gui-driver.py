@@ -240,7 +240,7 @@ class MainView(Tk):
                     x alpha - float 0.1
                     x sampling ratio - float 0.5
                     x classes - 10
-                    x algorithm - FedGen, FedAvg, FedProx, FedDstll-FL
+                    x algorithm - FedGen, FedAvg, FedProx, FedDistill, FedEnsemble
                     x batch size - 32
                     x global iterations (rounds) - 200
                     x epochs - 20
@@ -252,7 +252,7 @@ class MainView(Tk):
             """
             # options
             self.dataset_options = ['Mnist','EMnist']
-            self.alg_options = ['FedGen', 'FedAvg', 'FedProx', 'FedDistll-FL']
+            self.alg_options = ['FedGen', 'FedAvg', 'FedProx', 'FedDistill', 'FedEnsemble']
             self.model_options = ['cnn', 'mfl']
             self.training_options = ['1', '2', '3']
 
@@ -407,7 +407,7 @@ class MainView(Tk):
 
             self.finish_btn = Button(self, text='Exit', command=finish_btn_tasks)
             self.canvas.create_window(1100, 675, window=self.finish_btn, tags = 'res-page')
-            self.s_f_btn = Button(self, text='Save end Exit', command=s_f_btn_tasks)
+            self.s_f_btn = Button(self, text='Save and Exit', command=s_f_btn_tasks)
             self.canvas.create_window(1000, 675, window=self.s_f_btn, tags='res-page')
 
         page_1()
@@ -418,7 +418,7 @@ class MainView(Tk):
             text='Inverting Gradients -- How easy is it to break privacy in federated learning?',
             font=('Helvatica', 24), fill='Gray', tags='del')
 
-        
+
         def page_1():
             self.canvas.create_text(800, 150, text='Set parameters', font=('Helvatica', 20), fill='Gray', tags='page-1')
 
@@ -450,7 +450,7 @@ class MainView(Tk):
             self.optim_label = Label(self.canvas, text='Optimizer', bg="#E2E3DB")
             self.canvas.create_window(450, 300, anchor=NW, window=self.optim_label, tags='page-1m')
             self.canvas.create_window(600, 300, anchor=NW, window=self.optim, tags='page-1m')
-            
+
             # max iter field
             self.max_iter_field = Entry(self.canvas)
             self.max_iter_field.insert(END, '4000')
@@ -490,7 +490,7 @@ class MainView(Tk):
             def run():
                 os.chdir(self.root_dir)
                 os.chdir("Algs/invertinggradients")
-                
+
                 # run algorithm with args
                 p = [
                     "python",
@@ -547,7 +547,7 @@ class MainView(Tk):
 
             self.run_btn = Button(self, text='Reconstruct Image', command=run_btn_pressed)
             self.canvas.create_window(800, 750, window=self.run_btn, tags='run_btn')
-        
+
         def page_2():
             self.canvas.delete('page-1','page-1m')
             self.stat_img = (Image.open("stats.png"))
@@ -556,7 +556,7 @@ class MainView(Tk):
 
             self.canvas.create_image(800-400, 450-300, image=self.stat_img, anchor=NW, tags='page-2')
             self.canvas.create_text((800, 450+325), text="Statistics", font=('Helvatica', 20), fill='Gray', tags = 'page-1')
-            
+
         page_1()
 
     def r_page_1(self):
@@ -578,7 +578,7 @@ class MainView(Tk):
             p = ["python", "generate_default_models.py"]
             subprocess.call(p)
             time.sleep(1)
-            
+
         def donwload_btn_actions():
             self.canvas.delete('loading_data')
             self.canvas.delete('download_btn')
@@ -702,7 +702,7 @@ class MainView(Tk):
 
             # options
             self.dataset_options = ['Fashion-MNIST', 'CIFAR-10']
-            
+
             self.alg_options = ['Label Flipping Attack',
                                 'Attack Timing',
                                 'Malicious Participant Availibility']
@@ -850,7 +850,7 @@ class MainView(Tk):
 
             self.finish_btn = Button(self, text='Exit', command=finish_btn_tasks)
             self.canvas.create_window(1100, 675, window=self.finish_btn, tags = 'page-3')
-            self.s_f_btn = Button(self, text='Save end Exit', command=s_f_btn_tasks)
+            self.s_f_btn = Button(self, text='Save and Exit', command=s_f_btn_tasks)
             self.canvas.create_window(1000, 675, window=self.s_f_btn, tags='page-3')
 
         page_1()
@@ -1063,7 +1063,7 @@ class MainView(Tk):
             f.close()
             self.finish_btn = Button(self, text='Exit', command=finish_btn_tasks)
             self.canvas.create_window(1100, 675, window=self.finish_btn, tags = 'res-page')
-            self.s_f_btn = Button(self, text='Save end Exit', command=s_f_btn_tasks)
+            self.s_f_btn = Button(self, text='Save and Exit', command=s_f_btn_tasks)
             self.canvas.create_window(1000, 675, window=self.s_f_btn, tags='res-page')
 
         page_1()
@@ -1134,7 +1134,7 @@ class MainView(Tk):
             elif self.method_clicked == 'FedProx':
                 self.method = 'fedprox'
             elif self.method_clicked == 'FedFV':
-                self.method = 'fedfv'     
+                self.method = 'fedfv'
 
             if self.opt_clicked =='Adam':
                 self.optimizer ='Adam'
@@ -1146,9 +1146,9 @@ class MainView(Tk):
             elif self.model_clicked == 'cnn':
                 self.model = 'cnn'
             elif self.model_clicked == 'resnet18':
-                self.model = 'resnet18'  
+                self.model = 'resnet18'
 
-            
+
             # run algorithm with args
             # python main.py --task mnist_client100_dist0_beta0_noise0 --model cnn --method fedavg --num_rounds 20 --num_epochs 5 --learning_rate 0.215 --proportion 0.1 --batch_size 10 --train_rate 1 --eval_interval 1
             p = [
@@ -1319,7 +1319,7 @@ class MainView(Tk):
             p = ["rm", "-rf", "temp.png"]
             subprocess.call(p)
             self.exit_command()
-            
+
         def s_f_btn_tasks():
             p = ["mv", "temp.png", "Algs/Fairness/saved_plots/acc_plot_"+self.method[:-3]+".png"]
             subprocess.call(p)
@@ -1338,7 +1338,7 @@ class MainView(Tk):
                 with open(path+f) as json_data:
                     data = json.load(json_data)
 
-            accuracy = data['valid_accs']    
+            accuracy = data['valid_accs']
 
             print(accuracy)
 
@@ -1353,14 +1353,14 @@ class MainView(Tk):
 
             self.canvas.create_image(500, 175, image=self.acc_plot_fig, anchor=NW, tags='page-3')
 
-            self.canvas.create_text(600, 675, text="Final Accuracy: " + str(accuracy[int(self.num_rounds.get()) - 1]), 
+            self.canvas.create_text(600, 675, text="Final Accuracy: " + str(accuracy[int(self.num_rounds.get()) - 1]),
                                     font=('Helvatica', 18), fill='Gray', tags='page-3')
-            self.canvas.create_text(600, 715, text="Elapsed time: " + str(self.toc - self.tic), 
+            self.canvas.create_text(600, 715, text="Elapsed time: " + str(self.toc - self.tic),
                                     font=('Helvatica', 18), fill='Gray', tags='page-3')
-        
+
             self.finish_btn = Button(self, text='Exit', command=finish_btn_tasks)
             self.canvas.create_window(1100, 675, window=self.finish_btn, tags = 'page-3')
-            self.s_f_btn = Button(self, text='Save end Exit', command=s_f_btn_tasks)
+            self.s_f_btn = Button(self, text='Save and Exit', command=s_f_btn_tasks)
             self.canvas.create_window(1000, 675, window=self.s_f_btn, tags='page-3')
 
         page_1()

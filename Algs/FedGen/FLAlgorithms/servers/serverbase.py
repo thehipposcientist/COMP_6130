@@ -192,7 +192,7 @@ class Server:
         stats = self.test_personalized_model(selected=selected)
         test_ids, test_num_samples, test_tot_correct, test_losses = stats[:4]
         glob_acc = np.sum(test_tot_correct)*1.0/np.sum(test_num_samples)
-        test_loss = np.sum([x * y for (x, y) in zip(test_num_samples, test_losses)]).item() / np.sum(test_num_samples)
+        test_loss = np.sum([x * y.detach() for (x, y) in zip(test_num_samples, test_losses)]).item() / np.sum(test_num_samples)
         if save:
             self.metrics['per_acc'].append(glob_acc)
             self.metrics['per_loss'].append(test_loss)
