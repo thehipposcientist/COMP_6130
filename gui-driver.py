@@ -808,17 +808,27 @@ class MainView(Tk):
         def run(method):
             os.chdir(self.root_dir)
 
-            if method == 'main-esa.py':
+            path = 'Algs/Inference/' + method + '/log/'
+            files = os.listdir(path)
+
+            # remove any existing files from previous runs
+            for f in files:
+                os.remove(path+f)
+
+            if method == 'ESA':
+                attack = 'main-esa.py'
                 os.chdir("Algs/Inference/ESA")
-            elif method == 'main-pra.py':
+            elif method == 'PRA':
+                attack = 'main-pra.py'
                 os.chdir("Algs/Inference/PRA")    
-            elif method == 'main-grna.py':
+            elif method == 'GRNA':
+                attack = 'main-grna.py'
                 os.chdir("Algs/Inference/GRNA")       
 
             # run algorithm with args
             p = [
                 "python",
-                method,]
+                attack,]
 
             self.tic = time.perf_counter()
             subprocess.call(p)
@@ -829,7 +839,7 @@ class MainView(Tk):
             self.canvas.delete('esa_btn')
             self.canvas.delete('pra_btn')
             self.canvas.delete('grna_btn')
-            self.canvas.create_text(800, 650, text='Running', font=('Helvatica', 18), fill='Gray', tags='page-2')
+            self.canvas.create_text(900, 650, text='Running', font=('Helvatica', 18), fill='Gray', tags='page-2')
 
         def run_btn_threads(method):
             run_process = threading.Thread(target=lambda: run(method))
@@ -841,7 +851,7 @@ class MainView(Tk):
             run_process.join()
             self.pb.stop()
             self.canvas.delete('run')
-            self.next_btn = Button(self, text='Next', command=page_2)
+            self.next_btn = Button(self, text='Next', command= lambda:page_2(method))
             self.canvas.create_window(900, 650, window=self.next_btn, tags = 'page-2')
 
         def run_btn_pressed(method):
@@ -854,13 +864,13 @@ class MainView(Tk):
             self.canvas.create_text(900, 150, text='Feature Inference Attack on Model Predictions in Vertical Federated Learning', font=('Helvatica', 20), fill='Gray', tags='page-1')
             self.canvas.create_text(900, 200, text='Please Select a Model to Try:', font=('Helvatica', 20), fill='Gray', tags='page-1')
 
-            self.esa_btn = Button(self, bg='#CDB4B2', text='Equation Solving Attack', command=lambda: run_btn_pressed('main-esa.py'))
+            self.esa_btn = Button(self, bg='#FFFFFF', text='Equation Solving Attack', command=lambda: run_btn_pressed('ESA'))
             self.canvas.create_window(900, 350, window=self.esa_btn, tags='esa_btn')
 
-            self.pra_btn = Button(self, bg='#CDB4B2', text='Path Restriction Attack', command=lambda: run_btn_pressed('main-pra.py'))
+            self.pra_btn = Button(self, bg='#FFFFFF', text='Path Restriction Attack', command=lambda: run_btn_pressed('PRA'))
             self.canvas.create_window(900, 400, window=self.pra_btn, tags='pra_btn')
 
-            self.grna_btn = Button(self, bg='#CDB4B2', text='Generative Regression Network Attack', command=lambda: run_btn_pressed('main-grna.py'))
+            self.grna_btn = Button(self, bg='#FFFFFF', text='Generative Regression Network Attack', command=lambda: run_btn_pressed('GRNA'))
             self.canvas.create_window(900, 450, window=self.grna_btn, tags='grna_btn')
 
         def finish_btn_tasks():
@@ -874,13 +884,28 @@ class MainView(Tk):
             self.exit_command()
             pass
 
-        def page_2():
+        def page_2(method):
             os.chdir(self.root_dir)
             self.canvas.delete('page-1')
             self.canvas.create_text(800, 150, text='Results', font=('Helvatica', 18), fill='Gray', tags='page-2')
 
-            FILEPATH = 'Algs/DataPoisoning/3000_results.csv'
-            df = pd.read_csv(FILEPATH, header=None)
+            path = 'Algs/Inference/' + method + '/log/'
+            files = os.listdir(path)
+
+            for f in files:
+                data = open(path+f)
+            
+            average_attack = 'average attack mse:'
+            average_random = 'CRITICAL - average random mse:'
+
+            mse_list = []
+            
+            for line in iter (data):
+                if average_attack or average_random in line:
+                    mse_list.append(line)
+
+            print(mse_list)
+
             acc_plt = plt
             acc_plt.plot(df[0], color='blue')
             acc_plt.xlabel('Epochs')
@@ -1036,7 +1061,9 @@ class MainView(Tk):
             os.chdir(self.root_dir)
             os.chdir("Algs/Fairness/")
             p = ["python", "generate_fedtask.py"]
+            self.tic = time.perf_counter()
             subprocess.call(p)
+            self.toc = time.perf_counter()
             time.sleep(1)
 
         def donwload_btn_actions():
