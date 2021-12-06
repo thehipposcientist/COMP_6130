@@ -946,7 +946,129 @@ class MainView(Tk):
 
     def r_page_6(self):
         self.clean()
-        self.canvas.create_text(800, 450, text="Inference Attacks", font=('Helvatica', 24), fill='Gray', tags = 'del')
+        
+        def run(method):
+            os.chdir(self.root_dir)
+
+            path = 'Algs/Inference/' + method + '/log/'
+            files = os.listdir(path)
+
+            # remove any existing files from previous runs
+            for f in files:
+                os.remove(path+f)
+
+            if method == 'ESA':
+                attack = 'main-esa.py'
+                os.chdir("Algs/Inference/ESA")
+            elif method == 'PRA':
+                attack = 'main-pra.py'
+                os.chdir("Algs/Inference/PRA")
+            elif method == 'GRNA':
+                attack = 'main-grna.py'
+                os.chdir("Algs/Inference/GRNA")
+
+            # run algorithm with args
+            p = [
+                "python",
+                attack,]
+
+            self.tic = time.perf_counter()
+            subprocess.call(p)
+            self.toc = time.perf_counter()
+            time.sleep(1)
+
+        def run_btn_actions():
+            self.canvas.delete('esa_btn')
+            self.canvas.delete('pra_btn')
+            self.canvas.delete('grna_btn')
+            self.canvas.create_text(900, 650, text='Running', font=('Helvatica', 18), fill='Gray', tags='page-2')
+
+        def run_btn_threads(method):
+            run_process = threading.Thread(target=lambda: run(method))
+            run_btn_act = threading.Thread(target=run_btn_actions)
+            self.pb.start()
+            run_process.start()
+            run_btn_act.start()
+            run_btn_act.join()
+            run_process.join()
+            self.pb.stop()
+            self.canvas.delete('run')
+            self.next_btn = Button(self, text='Next', command= lambda:page_2(method))
+            self.canvas.create_window(900, 650, window=self.next_btn, tags = 'page-2')
+
+        def run_btn_pressed(method):
+            self.pb = Progressbar(self.canvas, orient=HORIZONTAL, length=200, mode='indeterminate')
+            self.canvas.create_window(900,625, window=self.pb, tags='run')
+            self.main_thread = threading.Thread(target=lambda:run_btn_threads(method))
+            self.main_thread.start()
+
+        def page_1():
+            self.canvas.create_text(900, 150, text='Feature Inference Attack on Model Predictions in Vertical Federated Learning', font=('Helvatica', 20), fill='Gray', tags='page-1')
+            self.canvas.create_text(900, 200, text='Please Select a Model to Try:', font=('Helvatica', 20), fill='Gray', tags='page-1')
+
+            self.esa_btn = Button(self, bg='#FFFFFF', text='Equation Solving Attack', command=lambda: run_btn_pressed('ESA'))
+            self.canvas.create_window(900, 350, window=self.esa_btn, tags='esa_btn')
+
+            self.pra_btn = Button(self, bg='#FFFFFF', text='Path Restriction Attack', command=lambda: run_btn_pressed('PRA'))
+            self.canvas.create_window(900, 400, window=self.pra_btn, tags='pra_btn')
+
+            self.grna_btn = Button(self, bg='#FFFFFF', text='Generative Regression Network Attack', command=lambda: run_btn_pressed('GRNA'))
+            self.canvas.create_window(900, 450, window=self.grna_btn, tags='grna_btn')
+
+        def finish_btn_tasks():
+            p = ["rm", "-rf", "temp.png"]
+            subprocess.call(p)
+            self.exit_command()
+
+        def s_f_btn_tasks():
+            p = ["mv", "temp.png", "Algs/DataPoisoning/saved_plots/acc_plot_"+self.method[:-3]+".png"]
+            subprocess.call(p)
+            self.exit_command()
+            pass
+
+        def page_2(method):
+            os.chdir(self.root_dir)
+            self.canvas.delete('page-1')
+            self.canvas.create_text(800, 150, text='Results', font=('Helvatica', 18), fill='Gray', tags='page-2')
+
+            path = 'Algs/Inference/' + method + '/log/'
+            files = os.listdir(path)
+
+            for f in files:
+                data = open(path+f)
+
+            average_attack = 'average attack mse:'
+            average_random = 'CRITICAL - average random mse:'
+
+            mse_list = []
+
+            for line in iter (data):
+                if average_attack or average_random in line:
+                    mse_list.append(line)
+
+            print(mse_list)
+
+            acc_plt = plt
+            acc_plt.plot(df[0], color='blue')
+            acc_plt.xlabel('Epochs')
+            acc_plt.ylabel('Accuracy (%)')
+            acc_plt.savefig('temp.png')
+
+            self.acc_plot_fig = (Image.open("temp.png"))
+            self.acc_plot_fig = ImageTk.PhotoImage(self.acc_plot_fig)
+
+            self.canvas.create_image(500, 175, image=self.acc_plot_fig, anchor=NW, tags='page-3')
+
+            self.canvas.create_text(600, 675, text="Final Accuracy: " + str(df[0][int(self.epochs.get()) - 1]),
+                                    font=('Helvatica', 18), fill='Gray', tags='page-2')
+
+            self.finish_btn = Button(self, text='Exit', command=finish_btn_tasks)
+            self.canvas.create_window(1100, 675, window=self.finish_btn, tags = 'page-2')
+            self.s_f_btn = Button(self, text='Save end Exit', command=s_f_btn_tasks)
+            self.canvas.create_window(1000, 675, window=self.s_f_btn, tags='page-2')
+
+        page_1()
+
         pass
 
     def r_page_7(self):
