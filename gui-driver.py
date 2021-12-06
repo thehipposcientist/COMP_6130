@@ -1338,13 +1338,14 @@ class MainView(Tk):
                 with open(path+f) as json_data:
                     data = json.load(json_data)
 
-            accuracy = data['valid_accs']
+            accuracy = data['acc_dist']
+            clients = list(range(1,20))
 
             print(accuracy)
 
             acc_plt = plt
-            acc_plt.plot(accuracy, color='green')
-            acc_plt.xlabel('Number of Rounds')
+            acc_plt.bar(clients, accuracy[:19], width=0.1, color='green')
+            acc_plt.xlabel('Clients')
             acc_plt.ylabel('Accuracy (%)')
             acc_plt.savefig('temp.png')
 
@@ -1353,7 +1354,7 @@ class MainView(Tk):
 
             self.canvas.create_image(500, 175, image=self.acc_plot_fig, anchor=NW, tags='page-3')
 
-            self.canvas.create_text(600, 675, text="Final Accuracy: " + str(accuracy[int(self.num_rounds.get()) - 1]),
+            self.canvas.create_text(600, 675, text="Overall Accuracy: " + str(accuracy[len(accuracy) - 1]),
                                     font=('Helvatica', 18), fill='Gray', tags='page-3')
             self.canvas.create_text(600, 715, text="Elapsed time: " + str(self.toc - self.tic),
                                     font=('Helvatica', 18), fill='Gray', tags='page-3')
