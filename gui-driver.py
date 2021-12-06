@@ -1344,7 +1344,7 @@ class MainView(Tk):
             print(accuracy)
 
             acc_plt = plt
-            acc_plt.bar(clients, accuracy[:19], width=0.1, color='green')
+            acc_plt.bar(clients, accuracy[:19], width=0.2, color='green')
             acc_plt.xlabel('Clients')
             acc_plt.ylabel('Accuracy (%)')
             acc_plt.savefig('temp.png')
