@@ -109,3 +109,5 @@ Algs/DataPoisoning/data/
 Algs/DataPoisoning/default_models/
 Algs/Fairness/fedtask/mnist_client100_dist0_beta0_noise0/record/fedavg_Mmlp_R1_B10_E1_LR0.2150_P0.10_S0_T1.00_LD-0.002_WD0.000_DR0.00_.json
 Algs/Fairness/fedtask/mnist_client100_dist0_beta0_noise0/task.json
+Algs/Fairness/fedtask/mnist_client100_dist0_beta0_noise0/record/fedavg_Mmlp_R10_B10_E5_LR0.2150_P0.10_S0_T1.00_LD-0.002_WD0.000_DR0.00_.json
+temp.png
