@@ -857,12 +857,12 @@ class MainView(Tk):
 
     def r_page_3(self):
         self.clean()
-        self.canvas.create_text(800, 450, text="Model Poisoning Attacks", font=('Helvatica', 24), fill='Gray', tags = 'del')
+        self.canvas.create_text(800, 450, text="We've had hardware issues implementing this", font=('Helvatica', 24), fill='Gray', tags = 'del')
         pass
 
     def r_page_4(self):
         self.clean()
-        self.canvas.create_text(800, 450, text="Byzantine Attacks", font=('Helvatica', 24), fill='Gray', tags = 'del')
+        self.canvas.create_text(800, 450, text="We've had hardware issues implementing this. Check the next alg", font=('Helvatica', 24), fill='Gray', tags = 'del')
         pass
 
     def r_page_5(self):
