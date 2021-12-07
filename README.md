@@ -7,3 +7,4 @@ virtualenv env
 pip install -r requirements.txt
 python gui-driver.py
 ```
+GUI that analyzes several different federated learning algorithms andpresents a visulaization of results. 
